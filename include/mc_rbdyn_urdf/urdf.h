@@ -10,10 +10,12 @@
 #include <tinyxml2.h>
 #include <string>
 
+#include <mc_rbdyn_urdf/api.h>
+
 namespace mc_rbdyn_urdf
 {
 
-struct Limits
+struct MCRBDYNURDF_API Limits
 {
 public:
   std::map< int, std::vector<double> > lower;
@@ -22,7 +24,7 @@ public:
   std::map< int, std::vector<double> > torque;
 };
 
-struct URDFParserResult
+struct MCRBDYNURDF_API URDFParserResult
 {
 public:
   rbd::MultiBody mb;
@@ -33,17 +35,17 @@ public:
   std::map<int, sva::PTransformd> collision_tf;
 };
 
-std::vector<double> attrToList(const tinyxml2::XMLElement & dom, const std::string & attr, const std::vector<double> & def = {});
+MCRBDYNURDF_API std::vector<double> attrToList(const tinyxml2::XMLElement & dom, const std::string & attr, const std::vector<double> & def = {});
 
-Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom, const std::string & attr, const Eigen::Vector3d & def = Eigen::Vector3d(0,0,0));
+MCRBDYNURDF_API Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom, const std::string & attr, const Eigen::Vector3d & def = Eigen::Vector3d(0,0,0));
 
-Eigen::Matrix3d RPY(const double & r, const double & p, const double & y);
+MCRBDYNURDF_API Eigen::Matrix3d RPY(const double & r, const double & p, const double & y);
 
-rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type);
+MCRBDYNURDF_API rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type);
 
-sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName);
+MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName);
 
-URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed = true, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true);
+MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed = true, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true);
 
 }
 
