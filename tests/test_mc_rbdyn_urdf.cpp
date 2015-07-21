@@ -147,10 +147,10 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
   res.mbg.linkBodies(2, to, 3, from, 2);
   res.mbg.linkBodies(1, sva::PTransformd(sva::RotX(1.), Eigen::Vector3d(1.,0.,0.)), 4, from, 3);
 
-  res.limits.lower = {{0, {-1.}}, {1, {-1.}}, {2, {-1.}}};
-  res.limits.upper = {{0, {1.}}, {1, {1.}}, {2, {1.}}};
-  res.limits.velocity = {{0, {10.}}, {1, {10.}}, {2, {10.}}};
-  res.limits.torque = {{0, {50.}}, {1, {50.}}, {2, {50.}}};
+  res.limits.lower = std::map<int, std::vector<double>>({{0, {-1.}}, {1, {-1.}}, {2, {-1.}}});
+  res.limits.upper = std::map<int, std::vector<double>>({ { 0, { 1. } }, { 1, { 1. } }, { 2, { 1. } } });
+  res.limits.velocity = std::map<int, std::vector<double>>({ { 0, { 10. } }, { 1, { 10. } }, { 2, { 10. } } });
+  res.limits.torque = std::map<int, std::vector<double>>({ { 0, { 50. } }, { 1, { 50. } }, { 2, { 50. } } });
 
   res.mb = res.mbg.makeMultiBody(0, true);
   res.mbc = rbd::MultiBodyConfig(res.mb);

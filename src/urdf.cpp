@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cmath>
+#include <ciso646>
 
 namespace mc_rbdyn_urdf
 {
