@@ -6,6 +6,8 @@ PKG_CONFIG_USE_DEPENDENCY(mc_rbdyn_urdf SpaceVecAlg)
 PKG_CONFIG_USE_DEPENDENCY(mc_rbdyn_urdf RBDyn)
 PKG_CONFIG_USE_DEPENDENCY(mc_rbdyn_urdf tinyxml2)
 
+set_target_properties(mc_rbdyn_urdf PROPERTIES SOVERSION 1 VERSION 1.0.0)
+
 set(INSTALL_PATH include/mc_rbdyn_urdf)
 install(FILES ${HEADERS} DESTINATION ${INSTALL_PATH})
 install(TARGETS mc_rbdyn_urdf
