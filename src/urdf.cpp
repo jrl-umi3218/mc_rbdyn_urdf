@@ -83,7 +83,7 @@ inline Eigen::Matrix3d readInertia(const tinyxml2::XMLElement & dom)
   return m;
 }
 
-rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type)
+rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalSuffix = false)
 {
   if(type == "revolute")
     return rbd::Joint::Rev;
@@ -92,7 +92,12 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type)
   else if(type == "continuous")
     return rbd::Joint::Rev;
   else if(type == "floating")
-    return rbd::Joint::Free;
+    {
+      if (hasSphericalSuffix)
+	return rbd::Joint::Spherical;
+      else
+	return rbd::Joint::Free;
+    }
   else if(type == "fixed")
     return rbd::Joint::Fixed;
   std::cerr << "Unknown type in URDF " << type << std::endl;
@@ -123,17 +128,15 @@ sva::PTransformd originFromTag(const tinyxml2::XMLElement *dom)
   return tf;
 }
 
-URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const std::vector<std::string> & filteredLinksIn, bool transformInertia, const std::string & baseLinkIn, bool withVirtualLinks)
+std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string & content, const std::vector<std::string> & filteredLinksIn, bool transformInertia, const std::string & baseLinkIn, bool withVirtualLinks, const std::string sphericalSuffix)
 {
-  URDFParserResult res;
-
   tinyxml2::XMLDocument doc;
   doc.Parse(content.c_str());
   tinyxml2::XMLElement * robot = doc.FirstChildElement("robot");
   if(!robot)
   {
     std::cerr << "No robot tag in the URDF, parsing will stop now" << std::endl;
-    return res;
+    return "";
   }
   std::vector<tinyxml2::XMLElement *> links;
   std::vector<std::string> filteredLinks = filteredLinksIn;
@@ -168,7 +171,7 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
   if(links.size() == 0)
   {
     std::cerr << "Failed to extract any link information from the URDF, parsing will stop now" << std::endl;
-    return res;
+    return "";
   }
 
   std::string baseLink = baseLinkIn == "" ? links[0]->Attribute("name") : baseLinkIn;
@@ -283,7 +286,8 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
     {
       axis = attrToVector(*axisDom, "xyz").normalized();
     }
-    rbd::Joint::Type type = rbdynFromUrdfJoint(jointType);
+    rbd::Joint::Type type = rbdynFromUrdfJoint(jointType, (jointName.length() >= sphericalSuffix.length()
+		    && jointName.substr(jointName.length() - sphericalSuffix.length(), sphericalSuffix.length()) == sphericalSuffix));
 
     tinyxml2::XMLElement * parentDom = jointDom->FirstChildElement("parent");
     std::string jointParent = parentDom->Attribute("link");
@@ -319,6 +323,15 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
     res.limits.torque[jointName] = effort;
     res.limits.velocity[jointName] = velocity;
   }
+
+  return baseLink;
+}
+
+URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const std::vector<std::string> & filteredLinksIn, bool transformInertia, const std::string & baseLinkIn, bool withVirtualLinks, const std::string sphericalSuffix)
+{
+  URDFParserResult res;
+
+  std::string baseLink = parseMultiBodyGraphFromURDF(res, content, filteredLinksIn, transformInertia, baseLinkIn, withVirtualLinks, sphericalSuffix);
 
   res.mb = res.mbg.makeMultiBody(baseLink, fixed);
   res.mbc = rbd::MultiBodyConfig(res.mb);
