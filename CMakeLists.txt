@@ -8,6 +8,7 @@ SET(PROJECT_NAME mc_rbdyn_urdf)
 SET(PROJECT_DESCRIPTION "...")
 SET(PROJECT_URL "https://rob-dev.lirmm.fr/multi-contact/mc_rbdyn_urdf_cpp")
 
+SET(DOXYGEN_USE_MATHJAX "YES")
 SETUP_PROJECT()
 
 option(UNIT_TESTS "Generate unit tests." ON)
