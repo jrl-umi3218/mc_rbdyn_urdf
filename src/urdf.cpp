@@ -143,7 +143,7 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
       {
         if(not withVirtualLinks)
         {
-          if(link->FirstChildElement("inertia"))
+          if(link->FirstChildElement("inertial"))
           {
             links.push_back(link);
           }
