@@ -4,7 +4,7 @@ INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/eigen.cmake)
 INCLUDE(cmake/boost.cmake)
 
-SET(PROJECT_NAME mc_rbdyn_urdf)
+SET(PROJECT_NAME mc_rbdyn_urdf_cpp)
 SET(PROJECT_DESCRIPTION "...")
 SET(PROJECT_URL "https://rob-dev.lirmm.fr/multi-contact/mc_rbdyn_urdf_cpp")
 
