@@ -267,9 +267,9 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
 
     // Articular limit
     std::vector<double> lower(static_cast<size_t>(j.dof()), -INFINITY);
-    std::vector<double> upper(static_cast<size_t>(j.dof()), -INFINITY);
-    std::vector<double> effort(static_cast<size_t>(j.dof()), -INFINITY);
-    std::vector<double> velocity(static_cast<size_t>(j.dof()), -INFINITY);
+    std::vector<double> upper(static_cast<size_t>(j.dof()), INFINITY);
+    std::vector<double> effort(static_cast<size_t>(j.dof()), INFINITY);
+    std::vector<double> velocity(static_cast<size_t>(j.dof()), INFINITY);
 
     tinyxml2::XMLElement * limitDom = jointDom->FirstChildElement("limit");
     if(limitDom)
