@@ -1,0 +1,37 @@
+variables:
+  CI_TOOL: gitlab-ci
+  APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev"
+  GIT_DEPENDENCIES: "jorisv/SpaceVecAlg jorisv/RBDyn"
+
+# Secured variable are stored in the project
+# See: http://doc.gitlab.com/ci/variables/README.html
+
+# Notifications (email/chatroom) are also handled by gitlab directly
+
+before_script:
+  - git submodule update --quiet --init --recursive
+  - ./.jrl-ci/dependencies/pybindgen-0.16
+  - ./.jrl-ci/dependencies/eigen-3.2
+  - ./.jrl-ci/run before_install
+
+# The following is just an example possibility to run gcc/clang builds
+# One could set environment variable and apt dependencies to do the job
+
+build_gcc:
+  stage: build
+  script:
+    - ./.jrl-ci/run build
+    - ./.jrl-ci/run after_success
+  tags:
+    - GCC
+
+#build_clang:
+#  stage: build
+#  script:
+#    - apt-get install -y clang
+#    - ./.jrl-ci/run build
+#    - ./.jrl-ci/run after_success
+#  allow_failure: true
+
+stages:
+  - build
