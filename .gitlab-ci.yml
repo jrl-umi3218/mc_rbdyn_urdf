@@ -2,6 +2,8 @@ variables:
   CI_TOOL: gitlab-ci
   APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev"
   GIT_DEPENDENCIES: "jorisv/SpaceVecAlg jorisv/RBDyn"
+  GH_PUSH_URI: git@gite.lirmm.fr:multi-contact/mc_rbdyn_urdf_cpp.git
+  GH_REPO: multi-contact/mc_rbdyn_urdf_cpp
 
 # Secured variable are stored in the project
 # See: http://doc.gitlab.com/ci/variables/README.html
