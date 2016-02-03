@@ -1,5 +1,6 @@
 variables:
   CI_TOOL: gitlab-ci
+  CI_WIKI: git@gite.lirmm.fr:multi-contact/mc_rbdyn_urdf_cpp.wiki.git
   APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev"
   GIT_DEPENDENCIES: "jorisv/SpaceVecAlg jorisv/RBDyn"
 
@@ -20,7 +21,12 @@ build_gcc:
     - export CC=gcc
     - export CXX=g++
     - ./.jrl-ci/run build
+    - export CI_UPDATE_WIKI=true
+    - eval `ssh-agent`
+    - ssh-add ~/.ssh/push_rsa
     - ./.jrl-ci/run after_success
+  tags:
+    - GCC
 
 build_clang:
   stage: build
@@ -31,6 +37,8 @@ build_clang:
     - ./.jrl-ci/run build
     - ./.jrl-ci/run after_success
   allow_failure: true
+  tags:
+    - clang
 
 stages:
   - build
