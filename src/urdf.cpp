@@ -102,9 +102,13 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type)
 
 sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName)
 {
+  return originFromTag(root.FirstChildElement(tagName.c_str()));
+}
+
+sva::PTransformd originFromTag(const tinyxml2::XMLElement *dom)
+{
   sva::PTransformd tf = sva::PTransformd::Identity();
 
-  const tinyxml2::XMLElement * dom = root.FirstChildElement(tagName.c_str());
   if(dom)
   {
     const tinyxml2::XMLElement * originDom = dom->FirstChildElement("origin");
@@ -200,7 +204,32 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
       }
     }
 
-    res.visual_tf[id] = originFromTag(*linkDom, "visual");
+    // Parse all visual tags. There may be several per link 
+    for (tinyxml2::XMLElement *child = linkDom->FirstChildElement();
+         child != NULL; child = child->NextSiblingElement())
+    {
+      if (child)
+      {
+        if (child->Name() == std::string("visual"))
+        {
+          res.visual_tf[id].push_back(originFromTag(child));
+
+          tinyxml2::XMLElement *geometryDom = child->FirstChildElement("geometry");
+          if (geometryDom)
+          {
+            tinyxml2::XMLElement *meshDom = geometryDom->FirstChildElement("mesh");
+            if (meshDom)
+            {
+              Geometry g;
+              g.mesh = meshDom->Attribute("filename");
+              res.visual_geometry[id].push_back(g);
+            }
+          }
+        }
+      }
+    }
+
+    // FIXME! Just like visual tags, there can be several collision tags!
     res.collision_tf[id] = originFromTag(*linkDom, "collision");
 
     rbd::Body b(mass, com, inertia_o, id, linkName);

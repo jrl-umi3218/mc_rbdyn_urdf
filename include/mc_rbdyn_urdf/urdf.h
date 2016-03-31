@@ -24,6 +24,12 @@ public:
   std::map< int, std::vector<double> > torque;
 };
 
+struct MCRBDYNURDF_API Geometry
+{
+public:
+  std::string mesh;
+};
+
 struct MCRBDYNURDF_API URDFParserResult
 {
 public:
@@ -31,7 +37,8 @@ public:
   rbd::MultiBodyConfig mbc;
   rbd::MultiBodyGraph mbg;
   mc_rbdyn_urdf::Limits limits;
-  std::map<int, sva::PTransformd> visual_tf;
+  std::map<int, std::vector<sva::PTransformd>> visual_tf;
+  std::map<int, std::vector<mc_rbdyn_urdf::Geometry>> visual_geometry;
   std::map<int, sva::PTransformd> collision_tf;
 };
 
@@ -44,6 +51,7 @@ MCRBDYNURDF_API Eigen::Matrix3d RPY(const double & r, const double & p, const do
 MCRBDYNURDF_API rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type);
 
 MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName);
+MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement * dom);
 
 MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed = true, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true);
 
