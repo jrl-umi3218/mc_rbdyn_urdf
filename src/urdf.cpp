@@ -212,8 +212,6 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
       {
         if (child->Name() == std::string("visual"))
         {
-          res.visual_tf[id].push_back(originFromTag(child));
-
           tinyxml2::XMLElement *geometryDom = child->FirstChildElement("geometry");
           if (geometryDom)
           {
@@ -223,6 +221,10 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
               Geometry g;
               g.mesh = meshDom->Attribute("filename");
               res.visual_geometry[id].push_back(g);
+              // Only push visual tf if geometry is available
+              res.visual_tf[id].push_back(originFromTag(child));
+            } else {
+              std::cerr << "Warning: only mesh geometry is supported, visual element has been ignored" << std::endl;
             }
           }
         }

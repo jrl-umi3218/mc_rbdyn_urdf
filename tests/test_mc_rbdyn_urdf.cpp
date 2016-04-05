@@ -27,6 +27,21 @@ R"(<robot name="XYZSarm">
         <inertia ixx="0.1" ixy="0.0" ixz="0.0"
                 iyy="0.05" iyz="0.0" izz="0.001" />
       </inertial>
+      <visual>
+        <origin rpy="0. 0. 0." xyz=".1 .2 .3"/>
+        <geometry>
+          <mesh filename="test_mesh1.dae"/>
+        </geometry>
+      </visual>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="test_mesh2.dae"/>
+        </geometry>
+      </visual>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+      </visual>
     </link>
     <link name="b1">
       <inertial>
@@ -90,6 +105,13 @@ R"(<robot name="XYZSarm">
   </robot>
 )");
 
+namespace mc_rbdyn_urdf
+{
+bool operator==(mc_rbdyn_urdf::Geometry& g1, mc_rbdyn_urdf::Geometry& g2)
+{
+  return g1.mesh == g2.mesh;
+}
+} /* mc_rbdyn_urdf */
 
 mc_rbdyn_urdf::URDFParserResult createRobot()
 {
@@ -116,6 +138,12 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
   I4 << 0.1 , 0.0 , 0.0,
         0.0 , 0.3 , 0.0,
         0.0 , 0.0 , 0.251;
+  Eigen::Affine3d T0, T1;
+  T0.matrix() << 1, 0, 0, .1,
+                 0, 1, 0, .2,
+                 0, 0, 1, .3,
+                 0, 0, 0, 1;
+  T1 = Eigen::Affine3d::Identity();
 
   rbd::Body b0(1., Eigen::Vector3d::Zero(), I0, 0, "b0");
   rbd::Body b1(5., Eigen::Vector3d(0., 0.5, 0.), I1, 1, "b1");
@@ -151,6 +179,12 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
   res.limits.upper = std::map<int, std::vector<double>>({ { 0, { 1. } }, { 1, { 1. } }, { 2, { 1. } } });
   res.limits.velocity = std::map<int, std::vector<double>>({ { 0, { 10. } }, { 1, { 10. } }, { 2, { 10. } } });
   res.limits.torque = std::map<int, std::vector<double>>({ { 0, { 50. } }, { 1, { 50. } }, { 2, { 50. } } });
+  res.visual_tf = std::map<int, std::vector<sva::PTransformd>>({{0, {sva::PTransformd(T0.rotation(), T0.translation()), 
+                                                                     sva::PTransformd(T1.rotation(), T1.translation())}}});
+  mc_rbdyn_urdf::Geometry g1, g2;
+  g1.mesh = "test_mesh1.dae";
+  g2.mesh = "test_mesh2.dae";
+  res.visual_geometry = std::map<int, std::vector<mc_rbdyn_urdf::Geometry>>({ {0, {g1, g2}} });
 
   res.mb = res.mbg.makeMultiBody(0, true);
   res.mbc = rbd::MultiBodyConfig(res.mb);
@@ -221,4 +255,39 @@ BOOST_AUTO_TEST_CASE(loadTest)
     BOOST_CHECK_EQUAL(j1.direction(), j2.direction());
     BOOST_CHECK_EQUAL(j1.motionSubspace(), j2.motionSubspace());
   }
+}
+
+BOOST_AUTO_TEST_CASE(visualTest)
+{
+  auto cppRobot = createRobot();
+  auto strRobot = mc_rbdyn_urdf::rbdyn_from_urdf(XYZSarmUrdf);
+  const auto& cpp_visual_tfs = cppRobot.visual_tf;
+  const auto& cpp_geometries = cppRobot.visual_geometry;
+  const auto& str_visual_tfs = strRobot.visual_tf;
+  const auto& str_geometries = strRobot.visual_geometry;
+
+  for (const auto& body : cppRobot.mb.bodies())
+  {
+    const auto cppBodyId = cppRobot.mbg.bodyIdByName(body.name());
+    const auto strRobotBodyId = strRobot.mbg.bodyIdByName(body.name());
+    BOOST_CHECK_EQUAL(cppBodyId, strRobotBodyId);
+    BOOST_CHECK_EQUAL(str_visual_tfs.size(), cpp_visual_tfs.size());
+    BOOST_CHECK_EQUAL(str_geometries.size(), cpp_geometries.size());
+
+    for(const auto& g: str_geometries) {
+      BOOST_CHECK_EQUAL(g.second.size(), cpp_geometries.at(g.first).size());
+    }
+    for(const auto& v: str_visual_tfs) {
+      BOOST_CHECK_EQUAL(v.second.size(), cpp_visual_tfs.at(v.first).size());
+    }
+
+    BOOST_CHECK(std::equal(strRobot.visual_tf[strRobotBodyId].begin(),
+                           strRobot.visual_tf[strRobotBodyId].end(),
+                           cppRobot.visual_tf[strRobotBodyId].begin()));
+
+    BOOST_CHECK(std::equal(strRobot.visual_geometry[strRobotBodyId].begin(),
+                           strRobot.visual_geometry[strRobotBodyId].end(),
+                           cppRobot.visual_geometry[strRobotBodyId].begin()));
+  }
+
 }
