@@ -11,6 +11,7 @@
 #include <string>
 
 #include <mc_rbdyn_urdf/api.h>
+#include <boost/variant.hpp>
 
 namespace mc_rbdyn_urdf
 {
@@ -26,9 +27,36 @@ public:
 
 struct MCRBDYNURDF_API Geometry
 {
-public:
-  std::string mesh;
+ public:
+  struct Mesh {
+    Mesh() : scale(1) {};
+    std::string filename;
+    double scale;
+  };
+  struct Box
+  {
+    Box() : size(0.)  {}
+    double size;
+  };
+  struct Cylinder
+  {
+    Cylinder() : radius(0.), length(0.) {}
+    double radius;
+    double length;
+  };
+  struct Sphere
+  {
+    Sphere() : radius(0.) {}
+    double radius;
+  };
+
+  enum Type { BOX, CYLINDER, SPHERE, MESH, UNKNOWN };
+  Type type;
+  boost::variant<Mesh, Box, Cylinder, Sphere> data;
+
+  Geometry() : type(UNKNOWN) {}
 };
+
 
 struct MCRBDYNURDF_API URDFParserResult
 {

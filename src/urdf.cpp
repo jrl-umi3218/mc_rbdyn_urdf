@@ -204,7 +204,7 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
       }
     }
 
-    // Parse all visual tags. There may be several per link 
+    // Parse all visual tags. There may be several per link
     for (tinyxml2::XMLElement *child = linkDom->FirstChildElement();
          child != NULL; child = child->NextSiblingElement())
     {
@@ -219,7 +219,14 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
             if (meshDom)
             {
               Geometry g;
-              g.mesh = meshDom->Attribute("filename");
+              g.type = Geometry::Type::MESH;
+              auto& mesh = boost::get<Geometry::Mesh>(g.data);
+              mesh.filename = meshDom->Attribute("filename");
+              // Optional scale
+              double scale = 1;
+              meshDom->QueryDoubleAttribute( "scale", &scale );
+              mesh.scale = scale;
+
               res.visual_geometry[id].push_back(g);
               // Only push visual tf if geometry is available
               res.visual_tf[id].push_back(originFromTag(child));

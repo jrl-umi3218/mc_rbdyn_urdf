@@ -107,11 +107,32 @@ R"(<robot name="XYZSarm">
 
 namespace mc_rbdyn_urdf
 {
-bool operator==(mc_rbdyn_urdf::Geometry& g1, mc_rbdyn_urdf::Geometry& g2)
+bool operator==( const Geometry::Mesh& m1, const Geometry::Mesh& m2)
 {
-  return g1.mesh == g2.mesh;
+  return m1.scale == m2.scale && m1.filename == m2.filename;
+}
+
+bool operator==( const Geometry::Box& b1, const Geometry::Box& b2)
+{
+  return b1.size == b2.size;
+}
+
+bool operator==( const Geometry::Sphere& b1, const Geometry::Sphere& b2)
+{
+  return b1.radius == b2.radius;
+}
+
+bool operator==( const Geometry::Cylinder& b1, const Geometry::Cylinder& b2)
+{
+  return b1.radius == b2.radius && b1.length == b2.length;
+}
+
+bool operator==(Geometry& g1, Geometry& g2)
+{
+  return g1.type == g2.type && g1.data == g2.data;
 }
 } /* mc_rbdyn_urdf */
+
 
 mc_rbdyn_urdf::URDFParserResult createRobot()
 {
@@ -179,11 +200,13 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
   res.limits.upper = std::map<int, std::vector<double>>({ { 0, { 1. } }, { 1, { 1. } }, { 2, { 1. } } });
   res.limits.velocity = std::map<int, std::vector<double>>({ { 0, { 10. } }, { 1, { 10. } }, { 2, { 10. } } });
   res.limits.torque = std::map<int, std::vector<double>>({ { 0, { 50. } }, { 1, { 50. } }, { 2, { 50. } } });
-  res.visual_tf = std::map<int, std::vector<sva::PTransformd>>({{0, {sva::PTransformd(T0.rotation(), T0.translation()), 
+  res.visual_tf = std::map<int, std::vector<sva::PTransformd>>({{0, {sva::PTransformd(T0.rotation(), T0.translation()),
                                                                      sva::PTransformd(T1.rotation(), T1.translation())}}});
   mc_rbdyn_urdf::Geometry g1, g2;
-  g1.mesh = "test_mesh1.dae";
-  g2.mesh = "test_mesh2.dae";
+  g1.type = mc_rbdyn_urdf::Geometry::Type::MESH;
+  g2.type = mc_rbdyn_urdf::Geometry::Type::MESH;
+  boost::get<mc_rbdyn_urdf::Geometry::Mesh>(g1.data).filename = "test_mesh1.dae";
+  boost::get<mc_rbdyn_urdf::Geometry::Mesh>(g2.data).filename = "test_mesh2.dae";
   res.visual_geometry = std::map<int, std::vector<mc_rbdyn_urdf::Geometry>>({ {0, {g1, g2}} });
 
   res.mb = res.mbg.makeMultiBody(0, true);
