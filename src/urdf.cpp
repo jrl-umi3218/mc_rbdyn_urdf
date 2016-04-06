@@ -205,36 +205,32 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
     }
 
     // Parse all visual tags. There may be several per link
-    for (tinyxml2::XMLElement *child = linkDom->FirstChildElement();
-         child != NULL; child = child->NextSiblingElement())
+    for (tinyxml2::XMLElement *child = linkDom->FirstChildElement("visual");
+         child != nullptr; child = child->NextSiblingElement("visual"))
     {
-      if (child)
+      Visual v;
+      tinyxml2::XMLElement *geometryDom = child->FirstChildElement("geometry");
+      if (geometryDom)
       {
-        if (child->Name() == std::string("visual"))
+        tinyxml2::XMLElement *meshDom = geometryDom->FirstChildElement("mesh");
+        if (meshDom)
         {
-          tinyxml2::XMLElement *geometryDom = child->FirstChildElement("geometry");
-          if (geometryDom)
-          {
-            tinyxml2::XMLElement *meshDom = geometryDom->FirstChildElement("mesh");
-            if (meshDom)
-            {
-              Geometry g;
-              g.type = Geometry::Type::MESH;
-              auto& mesh = boost::get<Geometry::Mesh>(g.data);
-              mesh.filename = meshDom->Attribute("filename");
-              // Optional scale
-              double scale = 1;
-              meshDom->QueryDoubleAttribute( "scale", &scale );
-              mesh.scale = scale;
-
-              res.visual_geometry[id].push_back(g);
-              // Only push visual tf if geometry is available
-              res.visual_tf[id].push_back(originFromTag(child));
-            } else {
-              std::cerr << "Warning: only mesh geometry is supported, visual element has been ignored" << std::endl;
-            }
-          }
+          v.origin = originFromTag(child);
+          v.geometry.type = Geometry::Type::MESH;
+          auto& mesh = boost::get<Geometry::Mesh>(v.geometry.data);
+          mesh.filename = meshDom->Attribute("filename");
+          // Optional scale
+          double scale = 1.;
+          meshDom->QueryDoubleAttribute( "scale", &scale );
+          mesh.scale = scale;
         }
+        else
+        {
+          std::cerr << "Warning: only mesh geometry is supported, visual element has been ignored" << std::endl;
+        }
+        const char* name = child->Attribute("name");
+        if(name) v.name = name;
+        res.visual[id].push_back(v);
       }
     }
 

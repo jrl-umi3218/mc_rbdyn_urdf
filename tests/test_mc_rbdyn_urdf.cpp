@@ -127,12 +127,14 @@ bool operator==( const Geometry::Cylinder& b1, const Geometry::Cylinder& b2)
   return b1.radius == b2.radius && b1.length == b2.length;
 }
 
-bool operator==(Geometry& g1, Geometry& g2)
-{
-  return g1.type == g2.type && g1.data == g2.data;
+bool operator==(const Geometry& g1, const Geometry& g2) 
+{ 
+  return g1.type == g2.type && g1.data == g2.data; 
+}
+bool operator==(const Visual& v1, const Visual& v2) {
+  return v1.name == v2.name && v1.origin == v2.origin && v1.geometry == v2.geometry;
 }
 } /* mc_rbdyn_urdf */
-
 
 mc_rbdyn_urdf::URDFParserResult createRobot()
 {
@@ -200,14 +202,17 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
   res.limits.upper = std::map<int, std::vector<double>>({ { 0, { 1. } }, { 1, { 1. } }, { 2, { 1. } } });
   res.limits.velocity = std::map<int, std::vector<double>>({ { 0, { 10. } }, { 1, { 10. } }, { 2, { 10. } } });
   res.limits.torque = std::map<int, std::vector<double>>({ { 0, { 50. } }, { 1, { 50. } }, { 2, { 50. } } });
-  res.visual_tf = std::map<int, std::vector<sva::PTransformd>>({{0, {sva::PTransformd(T0.rotation(), T0.translation()),
-                                                                     sva::PTransformd(T1.rotation(), T1.translation())}}});
-  mc_rbdyn_urdf::Geometry g1, g2;
-  g1.type = mc_rbdyn_urdf::Geometry::Type::MESH;
-  g2.type = mc_rbdyn_urdf::Geometry::Type::MESH;
-  boost::get<mc_rbdyn_urdf::Geometry::Mesh>(g1.data).filename = "test_mesh1.dae";
-  boost::get<mc_rbdyn_urdf::Geometry::Mesh>(g2.data).filename = "test_mesh2.dae";
-  res.visual_geometry = std::map<int, std::vector<mc_rbdyn_urdf::Geometry>>({ {0, {g1, g2}} });
+
+  mc_rbdyn_urdf::Visual v1, v2;
+  v1.origin = sva::PTransformd(T0.rotation(), T0.translation());
+  v1.geometry.type = mc_rbdyn_urdf::Geometry::Type::MESH;
+  boost::get<mc_rbdyn_urdf::Geometry::Mesh>(v1.geometry.data).filename = "test_mesh1.dae";
+
+  v2.origin = sva::PTransformd(T1.rotation(), T1.translation());
+  v2.geometry.type = mc_rbdyn_urdf::Geometry::Type::MESH;
+  boost::get<mc_rbdyn_urdf::Geometry::Mesh>(v2.geometry.data).filename = "test_mesh2.dae";
+
+  res.visual = std::map<int, std::vector<mc_rbdyn_urdf::Visual>>({{0, {v1, v2}}});
 
   res.mb = res.mbg.makeMultiBody(0, true);
   res.mbc = rbd::MultiBodyConfig(res.mb);
@@ -284,33 +289,21 @@ BOOST_AUTO_TEST_CASE(visualTest)
 {
   auto cppRobot = createRobot();
   auto strRobot = mc_rbdyn_urdf::rbdyn_from_urdf(XYZSarmUrdf);
-  const auto& cpp_visual_tfs = cppRobot.visual_tf;
-  const auto& cpp_geometries = cppRobot.visual_geometry;
-  const auto& str_visual_tfs = strRobot.visual_tf;
-  const auto& str_geometries = strRobot.visual_geometry;
+  const auto& cpp_geometries = cppRobot.visual;
+  const auto& str_geometries = strRobot.visual;
+
+  BOOST_CHECK_EQUAL(str_geometries.size(), cpp_geometries.size());
+  for (const auto& g : str_geometries)
+  {
+    BOOST_CHECK_EQUAL(g.second.size(), cpp_geometries.at(g.first).size());
+  }
 
   for (const auto& body : cppRobot.mb.bodies())
   {
-    const auto cppBodyId = cppRobot.mbg.bodyIdByName(body.name());
-    const auto strRobotBodyId = strRobot.mbg.bodyIdByName(body.name());
-    BOOST_CHECK_EQUAL(cppBodyId, strRobotBodyId);
-    BOOST_CHECK_EQUAL(str_visual_tfs.size(), cpp_visual_tfs.size());
-    BOOST_CHECK_EQUAL(str_geometries.size(), cpp_geometries.size());
+    const auto bodyId = strRobot.mbg.bodyIdByName(body.name());
 
-    for(const auto& g: str_geometries) {
-      BOOST_CHECK_EQUAL(g.second.size(), cpp_geometries.at(g.first).size());
-    }
-    for(const auto& v: str_visual_tfs) {
-      BOOST_CHECK_EQUAL(v.second.size(), cpp_visual_tfs.at(v.first).size());
-    }
-
-    BOOST_CHECK(std::equal(strRobot.visual_tf[strRobotBodyId].begin(),
-                           strRobot.visual_tf[strRobotBodyId].end(),
-                           cppRobot.visual_tf[strRobotBodyId].begin()));
-
-    BOOST_CHECK(std::equal(strRobot.visual_geometry[strRobotBodyId].begin(),
-                           strRobot.visual_geometry[strRobotBodyId].end(),
-                           cppRobot.visual_geometry[strRobotBodyId].begin()));
+    BOOST_CHECK(std::equal(strRobot.visual[bodyId].begin(),
+                           strRobot.visual[bodyId].end(),
+                           cppRobot.visual[bodyId].begin()));
   }
-
 }

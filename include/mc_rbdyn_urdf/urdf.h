@@ -28,8 +28,9 @@ public:
 struct MCRBDYNURDF_API Geometry
 {
  public:
-  struct Mesh {
-    Mesh() : scale(1) {};
+  struct Mesh
+  {
+    Mesh() : scale(1) {}
     std::string filename;
     double scale;
   };
@@ -57,6 +58,13 @@ struct MCRBDYNURDF_API Geometry
   Geometry() : type(UNKNOWN) {}
 };
 
+struct MCRBDYNURDF_API Visual
+{
+  std::string name;
+  sva::PTransformd origin;
+  Geometry geometry;
+};
+
 
 struct MCRBDYNURDF_API URDFParserResult
 {
@@ -65,8 +73,7 @@ public:
   rbd::MultiBodyConfig mbc;
   rbd::MultiBodyGraph mbg;
   mc_rbdyn_urdf::Limits limits;
-  std::map<int, std::vector<sva::PTransformd>> visual_tf;
-  std::map<int, std::vector<mc_rbdyn_urdf::Geometry>> visual_geometry;
+  std::map<int, std::vector<mc_rbdyn_urdf::Visual>> visual;
   std::map<int, sva::PTransformd> collision_tf;
 };
 
