@@ -11,6 +11,7 @@
 #include <string>
 
 #include <mc_rbdyn_urdf/api.h>
+#include <boost/variant.hpp>
 
 namespace mc_rbdyn_urdf
 {
@@ -24,6 +25,47 @@ public:
   std::map< int, std::vector<double> > torque;
 };
 
+struct MCRBDYNURDF_API Geometry
+{
+ public:
+  struct Mesh
+  {
+    Mesh() : scale(1) {}
+    std::string filename;
+    double scale;
+  };
+  struct Box
+  {
+    Box() : size(0.)  {}
+    double size;
+  };
+  struct Cylinder
+  {
+    Cylinder() : radius(0.), length(0.) {}
+    double radius;
+    double length;
+  };
+  struct Sphere
+  {
+    Sphere() : radius(0.) {}
+    double radius;
+  };
+
+  enum Type { BOX, CYLINDER, SPHERE, MESH, UNKNOWN };
+  Type type;
+  boost::variant<Mesh, Box, Cylinder, Sphere> data;
+
+  Geometry() : type(UNKNOWN) {}
+};
+
+struct MCRBDYNURDF_API Visual
+{
+  std::string name;
+  sva::PTransformd origin;
+  Geometry geometry;
+};
+
+
 struct MCRBDYNURDF_API URDFParserResult
 {
 public:
@@ -31,7 +73,7 @@ public:
   rbd::MultiBodyConfig mbc;
   rbd::MultiBodyGraph mbg;
   mc_rbdyn_urdf::Limits limits;
-  std::map<int, sva::PTransformd> visual_tf;
+  std::map<int, std::vector<mc_rbdyn_urdf::Visual>> visual;
   std::map<int, sva::PTransformd> collision_tf;
 };
 
@@ -44,6 +86,7 @@ MCRBDYNURDF_API Eigen::Matrix3d RPY(const double & r, const double & p, const do
 MCRBDYNURDF_API rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type);
 
 MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName);
+MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement * dom);
 
 MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed = true, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true);
 
