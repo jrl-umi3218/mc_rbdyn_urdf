@@ -102,9 +102,13 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type)
 
 sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName)
 {
+  return originFromTag(root.FirstChildElement(tagName.c_str()));
+}
+
+sva::PTransformd originFromTag(const tinyxml2::XMLElement *dom)
+{
   sva::PTransformd tf = sva::PTransformd::Identity();
 
-  const tinyxml2::XMLElement * dom = root.FirstChildElement(tagName.c_str());
   if(dom)
   {
     const tinyxml2::XMLElement * originDom = dom->FirstChildElement("origin");
@@ -200,7 +204,37 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
       }
     }
 
-    res.visual_tf[id] = originFromTag(*linkDom, "visual");
+    // Parse all visual tags. There may be several per link
+    for (tinyxml2::XMLElement *child = linkDom->FirstChildElement("visual");
+         child != nullptr; child = child->NextSiblingElement("visual"))
+    {
+      Visual v;
+      tinyxml2::XMLElement *geometryDom = child->FirstChildElement("geometry");
+      if (geometryDom)
+      {
+        tinyxml2::XMLElement *meshDom = geometryDom->FirstChildElement("mesh");
+        if (meshDom)
+        {
+          v.origin = originFromTag(child);
+          v.geometry.type = Geometry::Type::MESH;
+          auto& mesh = boost::get<Geometry::Mesh>(v.geometry.data);
+          mesh.filename = meshDom->Attribute("filename");
+          // Optional scale
+          double scale = 1.;
+          meshDom->QueryDoubleAttribute( "scale", &scale );
+          mesh.scale = scale;
+        }
+        else
+        {
+          std::cerr << "Warning: only mesh geometry is supported, visual element has been ignored" << std::endl;
+        }
+        const char* name = child->Attribute("name");
+        if(name) v.name = name;
+        res.visual[id].push_back(v);
+      }
+    }
+
+    // FIXME! Just like visual tags, there can be several collision tags!
     res.collision_tf[id] = originFromTag(*linkDom, "collision");
 
     rbd::Body b(mass, com, inertia_o, id, linkName);
