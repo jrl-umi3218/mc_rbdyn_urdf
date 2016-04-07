@@ -168,11 +168,11 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
                  0, 0, 0, 1;
   T1 = Eigen::Affine3d::Identity();
 
-  rbd::Body b0(1., Eigen::Vector3d::Zero(), I0, 0, "b0");
-  rbd::Body b1(5., Eigen::Vector3d(0., 0.5, 0.), I1, 1, "b1");
-  rbd::Body b2(2., Eigen::Vector3d(0., 0.5, 0.), I2, 2, "b2");
-  rbd::Body b3(1.5, Eigen::Vector3d(0., 0.5, 0.), I3, 3, "b3");
-  rbd::Body b4(1., Eigen::Vector3d(0.5, 0., 0.), I4, 4, "b4");
+  rbd::Body b0(1., Eigen::Vector3d::Zero(), I0, "b0");
+  rbd::Body b1(5., Eigen::Vector3d(0., 0.5, 0.), I1, "b1");
+  rbd::Body b2(2., Eigen::Vector3d(0., 0.5, 0.), I2, "b2");
+  rbd::Body b3(1.5, Eigen::Vector3d(0., 0.5, 0.), I3, "b3");
+  rbd::Body b4(1., Eigen::Vector3d(0.5, 0., 0.), I4, "b4");
 
   res.mbg.addBody(b0);
   res.mbg.addBody(b1);
@@ -180,10 +180,10 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
   res.mbg.addBody(b3);
   res.mbg.addBody(b4);
 
-  rbd::Joint j0(rbd::Joint::RevX, true, 0, "j0");
-  rbd::Joint j1(rbd::Joint::RevY, true, 1, "j1");
-  rbd::Joint j2(rbd::Joint::RevZ, true, 2, "j2");
-  rbd::Joint j3(rbd::Joint::RevX, true, 3, "j3");
+  rbd::Joint j0(rbd::Joint::RevX, true, "j0");
+  rbd::Joint j1(rbd::Joint::RevY, true, "j1");
+  rbd::Joint j2(rbd::Joint::RevZ, true, "j2");
+  rbd::Joint j3(rbd::Joint::RevX, true, "j3");
 
   res.mbg.addJoint(j0);
   res.mbg.addJoint(j1);
@@ -193,15 +193,15 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
   sva::PTransformd to(Eigen::Vector3d(0.,1.,0.));
   sva::PTransformd from(sva::PTransformd::Identity());
 
-  res.mbg.linkBodies(0, to, 1, from, 0);
-  res.mbg.linkBodies(1, to, 2, from, 1);
-  res.mbg.linkBodies(2, to, 3, from, 2);
-  res.mbg.linkBodies(1, sva::PTransformd(sva::RotX(1.), Eigen::Vector3d(1.,0.,0.)), 4, from, 3);
+  res.mbg.linkBodies("b0", to, "b1", from, "j0");
+  res.mbg.linkBodies("b1", to, "b2", from, "j1");
+  res.mbg.linkBodies("b2", to, "b3", from, "j2");
+  res.mbg.linkBodies("b1", sva::PTransformd(sva::RotX(1.), Eigen::Vector3d(1.,0.,0.)), "b4", from, "j3");
 
-  res.limits.lower = std::map<int, std::vector<double>>({{0, {-1.}}, {1, {-1.}}, {2, {-1.}}});
-  res.limits.upper = std::map<int, std::vector<double>>({ { 0, { 1. } }, { 1, { 1. } }, { 2, { 1. } } });
-  res.limits.velocity = std::map<int, std::vector<double>>({ { 0, { 10. } }, { 1, { 10. } }, { 2, { 10. } } });
-  res.limits.torque = std::map<int, std::vector<double>>({ { 0, { 50. } }, { 1, { 50. } }, { 2, { 50. } } });
+  res.limits.lower = {{"j0", {-1.}}, {"j1", {-1.}}, {"j2", {-1.}}};
+  res.limits.upper = { { "j0", { 1. } }, { "j1", { 1. } }, { "j2", { 1. } } };
+  res.limits.velocity = { { "j0", { 10. } }, { "j1", { 10. } }, { "j2", { 10. } } };
+  res.limits.torque = { { "j0", { 50. } }, { "j1", { 50. } }, { "j2", { 50. } } };
 
   mc_rbdyn_urdf::Visual v1, v2;
   v1.origin = sva::PTransformd(T0.rotation(), T0.translation());
@@ -212,9 +212,9 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
   v2.geometry.type = mc_rbdyn_urdf::Geometry::Type::MESH;
   boost::get<mc_rbdyn_urdf::Geometry::Mesh>(v2.geometry.data).filename = "test_mesh2.dae";
 
-  res.visual = std::map<int, std::vector<mc_rbdyn_urdf::Visual>>({{0, {v1, v2}}});
+  res.visual = {{"b0", {v1, v2}}};
 
-  res.mb = res.mbg.makeMultiBody(0, true);
+  res.mb = res.mbg.makeMultiBody("b0", true);
   res.mbc = rbd::MultiBodyConfig(res.mb);
   res.mbc.zero(res.mb);
 
@@ -264,7 +264,6 @@ BOOST_AUTO_TEST_CASE(loadTest)
     const auto & b1 = cppRobot.mb.body(i);
     const auto & b2 = strRobot.mb.body(i);
 
-    BOOST_CHECK_EQUAL(b1.id(), b2.id());
     BOOST_CHECK_EQUAL(b1.name(), b2.name());
 
     BOOST_CHECK_EQUAL(b1.inertia().mass(), b2.inertia().mass());
@@ -277,7 +276,6 @@ BOOST_AUTO_TEST_CASE(loadTest)
     const auto & j1 = cppRobot.mb.joint(i);
     const auto & j2 = strRobot.mb.joint(i);
 
-    BOOST_CHECK_EQUAL(j1.id(), j2.id());
     BOOST_CHECK_EQUAL(j1.name(), j2.name());
     BOOST_CHECK_EQUAL(j1.type(), j2.type());
     BOOST_CHECK_EQUAL(j1.direction(), j2.direction());
@@ -300,10 +298,8 @@ BOOST_AUTO_TEST_CASE(visualTest)
 
   for (const auto& body : cppRobot.mb.bodies())
   {
-    const auto bodyId = strRobot.mbg.bodyIdByName(body.name());
-
-    BOOST_CHECK(std::equal(strRobot.visual[bodyId].begin(),
-                           strRobot.visual[bodyId].end(),
-                           cppRobot.visual[bodyId].begin()));
+    BOOST_CHECK(std::equal(strRobot.visual[body.name()].begin(),
+                           strRobot.visual[body.name()].end(),
+                           cppRobot.visual[body.name()].begin()));
   }
 }

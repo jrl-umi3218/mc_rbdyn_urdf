@@ -173,8 +173,6 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
 
   std::string baseLink = baseLinkIn == "" ? links[0]->Attribute("name") : baseLinkIn;
 
-  int id = 0;
-  std::map<std::string, int> linksId;
   for(tinyxml2::XMLElement * linkDom : links)
   {
     std::string linkName = linkDom->Attribute("name");
@@ -230,17 +228,15 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
         }
         const char* name = child->Attribute("name");
         if(name) v.name = name;
-        res.visual[id].push_back(v);
+        res.visual[linkName].push_back(v);
       }
     }
 
     // FIXME! Just like visual tags, there can be several collision tags!
-    res.collision_tf[id] = originFromTag(*linkDom, "collision");
+    res.collision_tf[linkName] = originFromTag(*linkDom, "collision");
 
-    rbd::Body b(mass, com, inertia_o, id, linkName);
+    rbd::Body b(mass, com, inertia_o, linkName);
     res.mbg.addBody(b);
-    linksId[linkName] = id;
-    id++;
   }
 
   std::vector<tinyxml2::XMLElement *> joints;
@@ -260,7 +256,6 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
     }
   }
 
-  id = 0;
   for(tinyxml2::XMLElement * jointDom : joints)
   {
     std::string jointName = jointDom->Attribute("name");
@@ -292,12 +287,10 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
     std::string jointChild = childDom->Attribute("link");
 
     // Create the joint and add it to the MultiBodyGraph
-    rbd::Joint j(type, axis, true, id, jointName);
+    rbd::Joint j(type, axis, true, jointName);
     res.mbg.addJoint(j);
 
-    int jointParentId = linksId[jointParent];
-    int jointChildId = linksId[jointChild];
-    res.mbg.linkBodies(jointParentId, staticTransform, jointChildId, sva::PTransformd::Identity(), id);
+    res.mbg.linkBodies(jointParent, staticTransform, jointChild, sva::PTransformd::Identity(), jointName);
 
     // Articular limit
     std::vector<double> lower(static_cast<size_t>(j.dof()), -INFINITY);
@@ -316,14 +309,13 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
       effort = attrToList(*limitDom, "effort");
       velocity = attrToList(*limitDom, "velocity");
     }
-    res.limits.lower[id] = lower;
-    res.limits.upper[id] = upper;
-    res.limits.torque[id] = effort;
-    res.limits.velocity[id] = velocity;
-    id++;
+    res.limits.lower[jointName] = lower;
+    res.limits.upper[jointName] = upper;
+    res.limits.torque[jointName] = effort;
+    res.limits.velocity[jointName] = velocity;
   }
 
-  res.mb = res.mbg.makeMultiBody(linksId[baseLink], fixed);
+  res.mb = res.mbg.makeMultiBody(baseLink, fixed);
   res.mbc = rbd::MultiBodyConfig(res.mb);
   res.mbc.zero(res.mb);
 
