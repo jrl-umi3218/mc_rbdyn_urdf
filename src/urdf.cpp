@@ -176,9 +176,9 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
   for(tinyxml2::XMLElement * linkDom : links)
   {
     std::string linkName = linkDom->Attribute("name");
-    double mass = 0.001;
+    double mass = 0.0;
     Eigen::Vector3d com = Eigen::Vector3d::Zero();
-    Eigen::Matrix3d inertia_o = Eigen::Matrix3d::Identity();
+    Eigen::Matrix3d inertia_o = Eigen::Matrix3d::Zero();
 
     tinyxml2::XMLElement * inertialDom = linkDom->FirstChildElement("inertial");
     bool isVirtual = (inertialDom == 0);
