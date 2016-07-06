@@ -1,0 +1,3 @@
+usr/include/*
+usr/lib/libmc_rbdyn_urdf.so
+usr/lib/*/pkgconfig/*

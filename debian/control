@@ -1,0 +1,54 @@
+Source: mc-rbdyn-urdf-cpp
+Priority: optional
+Maintainer: Pierre Gergondet <pierre.gergondet+ppa@gmail.com>
+Standards-Version: 3.9.5
+Section: libs
+Homepage: https://gite.lirmm.fr/multi-contact/mc_rbdyn_urdf_cpp
+#Vcs-Git: git://github.com/jrl-umi3218/mc-rbdyn-urdf -b debian
+#Vcs-Browser: http://github.com/jrl-umi3218/mc-rbdyn-urdf
+Build-Depends: debhelper (>= 9),
+               pkg-config,
+               cmake,
+               doxygen,
+               libboost-test-dev,
+               libspacevecalg-dev,
+               librbdyn-dev,
+               libtinyxml2-dev
+
+Package: libmc-rbdyn-urdf-dev
+Section: libdevel
+Architecture: any
+Depends: pkg-config,
+         libspacevecalg-dev,
+         librbdyn-dev,
+         libtinyxml2-dev,
+         libmc-rbdyn-urdf1 (= ${binary:Version}),
+         ${misc:Depends}
+Suggests: libmc-rbdyn-urdf-doc
+Description: mc-rbdyn-urdf - development files
+ mc-rbdyn-urdf allows one to parse an URDF file and create RBDyn structure
+ from it. It is entirely ROS-free.
+ .
+ This package contains development files (headers and shared library
+ symbolic link).
+
+Package: libmc-rbdyn-urdf1
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: mc-rbdyn-urdf: URDF parser for RBDyn
+ mc-rbdyn-urdf allows one to parse an URDF file and create RBDyn structure
+ from it. It is entirely ROS-free.
+
+Package: libmc-rbdyn-urdf-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Multi-Arch: foreign
+Suggests: libmc-rbdyn-urdf-dev
+Description: mc-rbdyn-urdf API documentation
+ mc-rbdyn-urdf allows one to parse an URDF file and create RBDyn structure
+ from it. It is entirely ROS-free.
+ .
+ This package provides the complete API documentation in HTML format.
