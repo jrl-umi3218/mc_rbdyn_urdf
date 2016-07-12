@@ -1,0 +1,4 @@
+# git-build-recipe format 0.4 deb-version {debupstream}+{revdate}+{git-commit}+{git-commit:debian}
+git+ssh://git@gite.lirmm.fr/multi-contact/mc_rbdyn_urdf_cpp master
+merge debian git+ssh://git@gite.lirmm.fr/multi-contact/mc_rbdyn_urdf_cpp debian
+run git submodule update --init
