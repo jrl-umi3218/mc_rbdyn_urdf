@@ -1,8 +1,8 @@
 variables:
   CI_TOOL: gitlab-ci
   CI_WIKI: git@gite.lirmm.fr:multi-contact/mc_rbdyn_urdf_cpp.wiki.git
-  APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev"
-  GIT_DEPENDENCIES: "jrl-umi3218/SpaceVecAlg jrl-umi3218/RBDyn"
+  APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev libspacevecalg-dev librbdyn-dev"
+  MASTER_PPA: "pierre-gergondet+ppa/multi-contact-unstable"
 
 # Secured variable are stored in the project
 # See: http://doc.gitlab.com/ci/variables/README.html
@@ -40,5 +40,62 @@ build_clang:
   tags:
     - clang
 
+package_trusty_amd64:
+  stage: package
+  before_script:
+    - git submodule update --quiet --init --recursive
+    - ./.packaging/setup_pbuilder.sh trusty amd64
+  script:
+    - ./.packaging/build_recipe.sh .mc_rbdyn_urdf_cpp.recipe trusty amd64
+  artifacts:
+    name: "mc_rbdyn_urdf_cpp_trusty_amd64"
+    paths:
+      - "*.deb"
+  tags:
+    - GCC
+
+package_trusty_i386:
+  stage: package
+  before_script:
+    - git submodule update --quiet --init --recursive
+    - ./.packaging/setup_pbuilder.sh trusty i386
+  script:
+    - ./.packaging/build_recipe.sh .mc_rbdyn_urdf_cpp.recipe trusty i386
+  artifacts:
+    name: "mc_rbdyn_urdf_cpp_trusty_i386"
+    paths:
+      - "*.deb"
+  tags:
+    - GCC
+
+package_xenial_amd64:
+  stage: package
+  before_script:
+    - git submodule update --quiet --init --recursive
+    - ./.packaging/setup_pbuilder.sh xenial amd64
+  script:
+    - ./.packaging/build_recipe.sh .mc_rbdyn_urdf_cpp.recipe xenial amd64
+  artifacts:
+    name: "mc_rbdyn_urdf_cpp_xenial_amd64"
+    paths:
+      - "*.deb"
+  tags:
+    - GCC
+
+package_xenial_i386:
+  stage: package
+  before_script:
+    - git submodule update --quiet --init --recursive
+    - ./.packaging/setup_pbuilder.sh xenial i386
+  script:
+    - ./.packaging/build_recipe.sh .mc_rbdyn_urdf_cpp.recipe xenial i386
+  artifacts:
+    name: "mc_rbdyn_urdf_cpp_xenial_i386"
+    paths:
+      - "*.deb"
+  tags:
+    - GCC
+
 stages:
   - build
+  - package
