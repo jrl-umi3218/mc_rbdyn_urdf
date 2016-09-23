@@ -11,7 +11,6 @@ variables:
 
 before_script:
   - git submodule update --quiet --init --recursive
-  - ./.jrl-ci/dependencies/pybindgen-0.16
   - ./.jrl-ci/dependencies/eigen-3.2
   - ./.jrl-ci/run before_install
 
