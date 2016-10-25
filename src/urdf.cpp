@@ -178,6 +178,7 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
     std::string linkName = linkDom->Attribute("name");
     double mass = 0.0;
     Eigen::Vector3d com = Eigen::Vector3d::Zero();
+    std::vector<double> comRPY = {0.0, 0.0, 0.0};
     Eigen::Matrix3d inertia_o = Eigen::Matrix3d::Zero();
 
     tinyxml2::XMLElement * inertialDom = linkDom->FirstChildElement("inertial");
@@ -188,8 +189,12 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
       tinyxml2::XMLElement * massDom = inertialDom->FirstChildElement("mass");
       tinyxml2::XMLElement * inertiaDom = inertialDom->FirstChildElement("inertia");
 
-      com = attrToVector(*originDom, "xyz", Eigen::Vector3d(0,0,0));
-      Eigen::Matrix3d comFrame = RPY(attrToList(*originDom, "rpy", {0.0, 0.0, 0.0}));
+      if(originDom)
+      {
+        com = attrToVector(*originDom, "xyz", Eigen::Vector3d(0,0,0));
+        comRPY = attrToList(*originDom, "rpy", {0.0, 0.0, 0.0});
+      }
+      Eigen::Matrix3d comFrame = RPY(comRPY);
       mass = massDom->DoubleAttribute("value");
       Eigen::Matrix3d inertia = readInertia(*inertiaDom);
       if(transformInertia)
