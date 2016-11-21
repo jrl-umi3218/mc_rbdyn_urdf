@@ -295,8 +295,20 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     tinyxml2::XMLElement * childDom = jointDom->FirstChildElement("child");
     std::string jointChild = childDom->Attribute("link");
 
-    // Create the joint and add it to the MultiBodyGraph
     rbd::Joint j(type, axis, true, jointName);
+
+    // Check if this is a mimic joint
+    tinyxml2::XMLElement * mimicDom = jointDom->FirstChildElement("mimic");
+    if(mimicDom)
+    {
+      std::string mimicJoint = mimicDom->Attribute("joint");
+      double multiplier = 1.0;
+      double offset = 0.0;
+      mimicDom->QueryDoubleAttribute("multiplier", &multiplier);
+      mimicDom->QueryDoubleAttribute("offset", &offset);
+      j.makeMimic(mimicJoint, multiplier, offset);
+    }
+
     res.mbg.addJoint(j);
 
     res.mbg.linkBodies(jointParent, staticTransform, jointChild, sva::PTransformd::Identity(), jointName);
