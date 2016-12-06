@@ -88,7 +88,9 @@ MCRBDYNURDF_API rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type);
 MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName);
 MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement * dom);
 
-MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed = true, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true);
+MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed = true, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true, const std::string sphericalSuffix = "_spherical");
+
+MCRBDYNURDF_API std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string & content, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true, const std::string sphericalSuffix = "_spherical");
 
 }
 

@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/eigen.cmake)
 INCLUDE(cmake/boost.cmake)
+INCLUDE(cmake/msvc-specific.cmake)
 
 SET(PROJECT_NAME mc_rbdyn_urdf_cpp)
 SET(PROJECT_DESCRIPTION "...")
@@ -23,6 +24,12 @@ SEARCH_FOR_EIGEN()
 ADD_REQUIRED_DEPENDENCY("SpaceVecAlg")
 ADD_REQUIRED_DEPENDENCY("RBDyn" "RBDyn_d")
 ADD_REQUIRED_DEPENDENCY("tinyxml2")
+
+# For MSVC, set local environment variable to enable finding the built dll
+# of the main library when launching ctest with RUN_TESTS
+IF(MSVC)
+  SET(CMAKE_MSVCIDE_RUN_PATH "\$(SolutionDir)/src/\$(Configuration)")
+ENDIF(MSVC)
 
 add_subdirectory(src)
 
