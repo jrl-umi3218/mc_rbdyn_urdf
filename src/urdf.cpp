@@ -92,12 +92,12 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalS
   else if(type == "continuous")
     return rbd::Joint::Rev;
   else if(type == "floating")
-    {
-      if (hasSphericalSuffix)
-	return rbd::Joint::Spherical;
-      else
-	return rbd::Joint::Free;
-    }
+  {
+    if (hasSphericalSuffix)
+      return rbd::Joint::Spherical;
+    else
+      return rbd::Joint::Free;
+  }
   else if(type == "fixed")
     return rbd::Joint::Fixed;
   std::cerr << "Unknown type in URDF " << type << std::endl;
@@ -287,7 +287,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
       axis = attrToVector(*axisDom, "xyz").normalized();
     }
     rbd::Joint::Type type = rbdynFromUrdfJoint(jointType, (jointName.length() >= sphericalSuffix.length()
-		    && jointName.substr(jointName.length() - sphericalSuffix.length(), sphericalSuffix.length()) == sphericalSuffix));
+                            && jointName.substr(jointName.length() - sphericalSuffix.length(), sphericalSuffix.length()) == sphericalSuffix));
 
     tinyxml2::XMLElement * parentDom = jointDom->FirstChildElement("parent");
     std::string jointParent = parentDom->Attribute("link");
@@ -308,7 +308,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     std::vector<double> velocity(static_cast<size_t>(j.dof()), INFINITY);
 
     tinyxml2::XMLElement * limitDom = jointDom->FirstChildElement("limit");
-    if(limitDom)
+    if(limitDom && j.type() != rbd::Joint::Fixed)
     {
       if(jointType != "continuous")
       {
@@ -318,6 +318,17 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
       effort = attrToList(*limitDom, "effort");
       velocity = attrToList(*limitDom, "velocity");
     }
+    auto check_limit = [&j](const std::string & name, const std::vector<double> & limit)
+    {
+      if(limit.size() != static_cast<size_t>(j.dof()))
+      {
+        std::cerr << "Joint " << name << " limit for " << j.name() << ": size missmatch, expected: " << j.dof() << ", got: " << limit.size() << std::endl;
+      }
+    };
+    check_limit("lower", lower);
+    check_limit("upper", upper);
+    check_limit("effort", effort);
+    check_limit("velocity", velocity);
     res.limits.lower[jointName] = lower;
     res.limits.upper[jointName] = upper;
     res.limits.torque[jointName] = effort;
