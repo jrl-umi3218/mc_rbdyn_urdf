@@ -50,6 +50,7 @@ package_trusty_amd64:
     name: "mc_rbdyn_urdf_cpp_trusty_amd64"
     paths:
       - "*.deb"
+    expire_in: '100y'
   tags:
     - GCC
 
@@ -64,6 +65,7 @@ package_trusty_i386:
     name: "mc_rbdyn_urdf_cpp_trusty_i386"
     paths:
       - "*.deb"
+    expire_in: '100y'
   tags:
     - GCC
 
@@ -78,6 +80,7 @@ package_xenial_amd64:
     name: "mc_rbdyn_urdf_cpp_xenial_amd64"
     paths:
       - "*.deb"
+    expire_in: '100y'
   tags:
     - GCC
 
@@ -92,6 +95,7 @@ package_xenial_i386:
     name: "mc_rbdyn_urdf_cpp_xenial_i386"
     paths:
       - "*.deb"
+    expire_in: '100y'
   tags:
     - GCC
 
