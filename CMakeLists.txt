@@ -30,6 +30,8 @@ set(PROJECT_DEBUG_POSTFIX "_d")
 set(DOXYGEN_USE_MATHJAX "YES")
 setup_project()
 
+option(PYTHON_BINDING "Generate python binding." ON)
+option(PYTHON_BINDING_USER_INSTALL "Install the Python bindings in user space" OFF)
 option(DISABLE_TESTS "Disable unit tests." OFF)
 
 if(NOT WIN32)
@@ -52,6 +54,10 @@ add_subdirectory(src)
 
 if(NOT ${DISABLE_TESTS})
   add_subdirectory(tests)
+endif()
+
+if(${PYTHON_BINDING})
+ add_subdirectory(binding/python)
 endif()
 
 pkg_config_append_libs(mc_rbdyn_urdf)

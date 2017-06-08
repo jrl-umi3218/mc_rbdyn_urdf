@@ -1,8 +1,9 @@
 variables:
   CI_TOOL: gitlab-ci
   CI_WIKI: git@gite.lirmm.fr:multi-contact/mc_rbdyn_urdf_cpp.wiki.git
-  APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev libspacevecalg-dev librbdyn-dev"
-  MASTER_PPA: "pierre-gergondet+ppa/multi-contact-unstable"
+  APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev"
+  GIT_DEPENDENCIES: "jrl-umi3218/Eigen3ToPython jrl-umi3218/SpaceVecAlg jrl-umi3218/RBDyn"
+  MASTER_PPA: ""
 
 # Secured variable are stored in the project
 # See: http://doc.gitlab.com/ci/variables/README.html
