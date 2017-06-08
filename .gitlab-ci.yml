@@ -1,7 +1,7 @@
 variables:
   CI_TOOL: gitlab-ci
   CI_WIKI: git@gite.lirmm.fr:multi-contact/mc_rbdyn_urdf_cpp.wiki.git
-  APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev"
+  APT_DEPENDENCIES: "libtinyxml2-dev libboost-all-dev python-dev"
   GIT_DEPENDENCIES: "jrl-umi3218/Eigen3ToPython jrl-umi3218/SpaceVecAlg jrl-umi3218/RBDyn"
   MASTER_PPA: ""
 
@@ -12,6 +12,7 @@ variables:
 
 before_script:
   - git submodule update --quiet --init --recursive
+  - apt-get update -qq && apt-get install -qq python-pip && pip install --upgrade pip
   - ./.jrl-ci/dependencies/eigen-3.2
   - ./.jrl-ci/run before_install
 
