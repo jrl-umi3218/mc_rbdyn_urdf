@@ -1,5 +1,22 @@
-#ifndef _H_MCRBDYNURDF_H_
-#define _H_MCRBDYNURDF_H_
+/* Copyright 2015-2017 CNRS-UM LIRMM, CNRS-AIST JRL
+ *
+ * This file is part of mc_rbdyn_urdf.
+ *
+ * mc_rbdyn_urdf is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * mc_rbdyn_urdf is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mc_rbdyn_urdf.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#pragma once
 
 #include <SpaceVecAlg/SpaceVecAlg>
 #include <RBDyn/Joint.h>
@@ -93,5 +110,3 @@ MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content, bo
 MCRBDYNURDF_API std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string & content, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true, const std::string sphericalSuffix = "_spherical");
 
 }
-
-#endif
