@@ -67,8 +67,8 @@ cdef class Limits(object):
     def __set__(self, value):
       assert(__EXPERT_MODE__)
       self.impl.torque = value
-  @staticmethod
-  cdef Limits fromC(const c_mc_rbdyn_urdf.Limits & lim):
+
+cdef Limits LimitsFromC(const c_mc_rbdyn_urdf.Limits & lim):
     cdef Limits ret = Limits()
     ret.impl = lim
     return ret
@@ -95,8 +95,8 @@ cdef class GeometryMesh(object):
       return self.impl.filename != other.impl.filename and self.impl.scale != other.impl.scale
     else:
       raise NotImplementedError("This comparison is not supported")
-  @staticmethod
-  cdef GeometryMesh fromC(const c_mc_rbdyn_urdf.GeometryMesh & m):
+
+cdef GeometryMesh GeometryMeshFromC(const c_mc_rbdyn_urdf.GeometryMesh & m):
     cdef GeometryMesh ret = GeometryMesh()
     ret.impl = m
     return ret
@@ -117,8 +117,8 @@ cdef class GeometryBox(object):
       return self.impl.size != other.impl.size
     else:
       raise NotImplementedError("This comparison is not supported")
-  @staticmethod
-  cdef GeometryBox fromC(const c_mc_rbdyn_urdf.GeometryBox & m):
+
+cdef GeometryBox GeometryBoxFromC(const c_mc_rbdyn_urdf.GeometryBox & m):
     cdef GeometryBox ret = GeometryBox()
     ret.impl = m
     return ret
@@ -145,8 +145,8 @@ cdef class GeometryCylinder(object):
       return self.impl.radius != other.radius and self.impl.length != other.impl.length
     else:
       raise NotImplementedError("This comparison is not supported")
-  @staticmethod
-  cdef GeometryCylinder fromC(const c_mc_rbdyn_urdf.GeometryCylinder & m):
+
+cdef GeometryCylinder GeometryCylinderFromC(const c_mc_rbdyn_urdf.GeometryCylinder & m):
     cdef GeometryCylinder ret = GeometryCylinder()
     ret.impl = m
     return ret
@@ -167,8 +167,8 @@ cdef class GeometrySphere(object):
       return self.impl.radius != other.impl.radius
     else:
       raise NotImplementedError("This comparison is not supported")
-  @staticmethod
-  cdef GeometrySphere fromC(const c_mc_rbdyn_urdf.GeometrySphere & m):
+
+cdef GeometrySphere GeometrySphereFromC(const c_mc_rbdyn_urdf.GeometrySphere & m):
     cdef GeometrySphere ret = GeometrySphere()
     ret.impl = m
     return ret
@@ -203,13 +203,13 @@ cdef class Geometry(object):
   property data:
     def __get__(self):
       if self.impl._type == c_mc_rbdyn_urdf.GeometryMESH:
-        return GeometryMesh.fromC(c_mc_rbdyn_urdf_private.getMesh(self.impl))
+        return GeometryMeshFromC(c_mc_rbdyn_urdf_private.getMesh(self.impl))
       elif self.impl._type == c_mc_rbdyn_urdf.GeometryBOX:
-        return GeometryBox.fromC(c_mc_rbdyn_urdf_private.getBox(self.impl))
+        return GeometryBoxFromC(c_mc_rbdyn_urdf_private.getBox(self.impl))
       elif self.impl._type == c_mc_rbdyn_urdf.GeometryCYLINDER:
-        return GeometryCylinder.fromC(c_mc_rbdyn_urdf_private.getCylinder(self.impl))
+        return GeometryCylinderFromC(c_mc_rbdyn_urdf_private.getCylinder(self.impl))
       elif self.impl._type == c_mc_rbdyn_urdf.GeometrySPHERE:
-        return GeometrySphere.fromC(c_mc_rbdyn_urdf_private.getSphere(self.impl))
+        return GeometrySphereFromC(c_mc_rbdyn_urdf_private.getSphere(self.impl))
       else:
         print "No data in the Geometry you are accessing"
         return None
@@ -232,8 +232,8 @@ cdef class Geometry(object):
       return self.impl._type != other.impl._type and self.data != other.data
     else:
       raise NotImplementedError("This comparison is not supported")
-  @staticmethod
-  cdef Geometry fromC(const c_mc_rbdyn_urdf.Geometry & g):
+
+cdef Geometry GeometryFromC(const c_mc_rbdyn_urdf.Geometry & g):
     cdef Geometry ret = Geometry()
     ret.impl = g
     return ret
@@ -255,7 +255,7 @@ cdef class Visual(object):
       self.impl.origin = deref(value.impl)
   property geometry:
     def __get__(self):
-      return Geometry.fromC(self.impl.geometry)
+      return GeometryFromC(self.impl.geometry)
     def __set__(self, Geometry value):
       assert(__EXPERT_MODE__)
       self.impl.geometry = value.impl
@@ -266,8 +266,8 @@ cdef class Visual(object):
       return self.impl.name != other.impl.name and self.impl.origin != other.impl.origin and self.geometry != other.geometry
     else:
       raise NotImplementedError("This comparison is not supported")
-  @staticmethod
-  cdef Visual fromC(const c_mc_rbdyn_urdf.Visual& v):
+
+cdef Visual VisualFromC(const c_mc_rbdyn_urdf.Visual& v):
     cdef Visual ret = Visual()
     ret.impl = v
     return ret
@@ -286,14 +286,14 @@ cdef class URDFParserResult(object):
       return rbdyn.MultiBodyGraphFromC(self.impl.mbg)
   property limits:
     def __get__(self):
-      return Limits.fromC(self.impl.limits)
+      return LimitsFromC(self.impl.limits)
   property visual:
     def __get__(self):
       res = {}
       for it in self.impl.visual:
         res[it.first] = []
         for v in it.second:
-          res[it.first].append(Visual.fromC(v))
+          res[it.first].append(VisualFromC(v))
       return res
   property collision_tf:
     def __get__(self):
@@ -301,11 +301,11 @@ cdef class URDFParserResult(object):
       for it in self.impl.collision_tf:
         res[it.first] = sva.PTransformdFromC(it.second)
       return res
-  @staticmethod
-  cdef URDFParserResult fromC(const c_mc_rbdyn_urdf.URDFParserResult & u):
+
+cdef URDFParserResult URDFParserResultFromC(const c_mc_rbdyn_urdf.URDFParserResult & u):
     cdef URDFParserResult res = URDFParserResult()
     res.impl = u
     return res
 
 def rbdyn_from_urdf(content, fixed = True, filteredLinks = [], transformInertia = True, baseLink = "Root", withVirtualLinks = True):
-  return URDFParserResult.fromC(c_mc_rbdyn_urdf.rbdyn_from_urdf(content, fixed, filteredLinks, transformInertia, baseLink, withVirtualLinks))
+  return URDFParserResultFromC(c_mc_rbdyn_urdf.rbdyn_from_urdf(content, fixed, filteredLinks, transformInertia, baseLink, withVirtualLinks))

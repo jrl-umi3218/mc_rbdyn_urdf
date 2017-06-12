@@ -19,7 +19,6 @@ from sva.c_sva cimport PTransformd
 from rbdyn.c_rbdyn cimport MultiBody, MultiBodyConfig, MultiBodyGraph
 
 from libcpp.map cimport map as cppmap
-from libcpp.memory cimport shared_ptr
 from libcpp.pair cimport pair
 from libcpp.string cimport string
 from libcpp.vector cimport vector

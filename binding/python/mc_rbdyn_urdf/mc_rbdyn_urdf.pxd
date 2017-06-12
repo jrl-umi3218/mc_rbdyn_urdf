@@ -19,40 +19,40 @@ cimport c_mc_rbdyn_urdf
 
 cdef class Limits(object):
   cdef c_mc_rbdyn_urdf.Limits impl
-  @staticmethod
-  cdef Limits fromC(const c_mc_rbdyn_urdf.Limits&)
+
+cdef Limits LimitsFromC(const c_mc_rbdyn_urdf.Limits&)
 
 cdef class GeometryMesh(object):
   cdef c_mc_rbdyn_urdf.GeometryMesh impl
-  @staticmethod
-  cdef GeometryMesh fromC(const c_mc_rbdyn_urdf.GeometryMesh&)
+
+cdef GeometryMesh GeometryMeshFromC(const c_mc_rbdyn_urdf.GeometryMesh&)
 
 cdef class GeometryBox(object):
   cdef c_mc_rbdyn_urdf.GeometryBox impl
-  @staticmethod
-  cdef GeometryBox fromC(const c_mc_rbdyn_urdf.GeometryBox&)
+
+cdef GeometryBox GeometryBoxFromC(const c_mc_rbdyn_urdf.GeometryBox&)
 
 cdef class GeometryCylinder(object):
   cdef c_mc_rbdyn_urdf.GeometryCylinder impl
-  @staticmethod
-  cdef GeometryCylinder fromC(const c_mc_rbdyn_urdf.GeometryCylinder&)
+
+cdef GeometryCylinder GeometryCylinderFromC(const c_mc_rbdyn_urdf.GeometryCylinder&)
 
 cdef class GeometrySphere(object):
   cdef c_mc_rbdyn_urdf.GeometrySphere impl
-  @staticmethod
-  cdef GeometrySphere fromC(const c_mc_rbdyn_urdf.GeometrySphere&)
+
+cdef GeometrySphere GeometrySphereFromC(const c_mc_rbdyn_urdf.GeometrySphere&)
 
 cdef class Geometry(object):
   cdef c_mc_rbdyn_urdf.Geometry impl
-  @staticmethod
-  cdef Geometry fromC(const c_mc_rbdyn_urdf.Geometry&)
+
+cdef Geometry GeometryFromC(const c_mc_rbdyn_urdf.Geometry&)
 
 cdef class Visual(object):
   cdef c_mc_rbdyn_urdf.Visual impl
-  @staticmethod
-  cdef Visual fromC(const c_mc_rbdyn_urdf.Visual&)
+
+cdef Visual VisualFromC(const c_mc_rbdyn_urdf.Visual&)
 
 cdef class URDFParserResult(object):
   cdef c_mc_rbdyn_urdf.URDFParserResult impl
-  @staticmethod
-  cdef URDFParserResult fromC(const c_mc_rbdyn_urdf.URDFParserResult&)
+
+cdef URDFParserResult URDFParserResultFromC(const c_mc_rbdyn_urdf.URDFParserResult&)
