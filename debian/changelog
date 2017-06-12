@@ -1,3 +1,9 @@
+mc-rbdyn-urdf-cpp (1.1.0-2ubuntu1) unstable; urgency=medium
+
+  * Add Python bindings
+
+ -- Pierre Gergondet <pierre.gergondet+ppa@gmail.com>  Mon, 12 Jun 2017 11:01:50 +0900
+
 mc-rbdyn-urdf-cpp (1.1.0-1trusty1) trusty; urgency=medium
 
   * Initial release.
