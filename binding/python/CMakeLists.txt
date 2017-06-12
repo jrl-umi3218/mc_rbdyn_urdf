@@ -37,15 +37,12 @@ add_custom_target(mc_rbdyn_urdf-python-bindings ALL
 )
 
 if(NOT ${DISABLE_TESTS})
-  add_custom_target(test-mc_rbdyn_urdf-python-bindings
-    COMMAND nosetests
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Test mc_rbdyn_urdf Python bindings"
-  )
-  add_test(NAME PythonBindingsTest
-    COMMAND nosetests
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  if(NOT DEFINED PYTHON_DEB_ROOT)
+    add_test(NAME PythonBindingsTest
+      COMMAND nosetests
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+  endif()
 endif()
 
 set(PIP_EXTRA_OPTIONS "")
@@ -53,9 +50,17 @@ if(${PYTHON_BINDING_USER_INSTALL})
   set(PIP_EXTRA_OPTIONS "--user")
 endif()
 # Install the bindings
-add_custom_target(install-mc_rbdyn_urdf-python-bindings
-  COMMAND pip install . ${PIP_EXTRA_OPTIONS}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMENT "Install mc_rbdyn_urdf Python bindings"
-)
+if(DEFINED PYTHON_DEB_ROOT)
+  add_custom_target(install-mc_rbdyn_urdf-python-bindings
+    COMMAND python setup.py install --root=${PYTHON_DEB_ROOT} --install-layout=deb && python3 setup.py install --root=${PYTHON_DEB_ROOT} --install-layout=deb
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Install mc_rbdyn_urdf Python bindings (Debian package)"
+  )
+else()
+  add_custom_target(install-mc_rbdyn_urdf-python-bindings
+    COMMAND pip install . ${PIP_EXTRA_OPTIONS}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Install mc_rbdyn_urdf Python bindings"
+  )
+endif()
 install(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_MAKE_PROGRAM} install-mc_rbdyn_urdf-python-bindings)")
