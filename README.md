@@ -2,7 +2,7 @@ mc_rbdyn_urdf
 ==
 
 [![License LGPL 3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.txt)
-[![build status](https://gite.lirmm.fr/ci/projects/4/status.png?ref=master)](https://gite.lirmm.fr/ci/projects/4?ref=master)
+[![Build Status](https://travis-ci.org/jrl-umi3218/mc_rbdyn_urdf.svg?branch=master)](https://travis-ci.org/jrl-umi3218/mc_rbdyn_urdf)
 
 This library allows to parse an URDF file and create RBDyn structure from it. It is entirely ROS-free.
 
