@@ -1,0 +1,30 @@
+sudo: required
+dist: trusty
+branches:
+  except:
+  - debian
+language: cpp
+compiler:
+- gcc
+- clang
+env:
+  global:
+  - APT_DEPENDENCIES="doxygen doxygen-latex libboost-all-dev python-numpy gfortran
+    libtinyxml2-dev"
+  - GIT_DEPENDENCIES="jrl-umi3218/Eigen3ToPython jrl-umi3218/SpaceVecAlg jrl-umi3218/RBDyn"
+  matrix:
+  - USE_PYTHON34=false
+  - USE_PYTHON34=true
+notifications:
+  slack:
+    secure: GpgEGE5Njo16lq1KkYjbsizEPdI9PzhEMBZhxaMkjTQ2P1iDssZjGzbhIsLqAKJ4/FlvesqHd7k/PyGH6x8y96Q/skfjrgFCd0nLDJm2lQAs7641nIsRdSO0zvQfoBsYm8GxpIw4dJUU9/2gKDv87infaBrOM35Xe4KsCcKiV1hRMVcEOigzASaycxUYcaydMJ5hcFoZ6QKD1UUJ6el/we/ep/qtiB+vIPs92WuW998Zqq3zcH2EisAzyOOCvB+BGiPPTKKfMHAW7t3b7uZ9VFbmWy7vHAtOTcOu4Skc4hli56dWaTAhlKPpaOFF1wMLiTQrUAuzJ4bKtpIdSh4kRKbnuzSrJr8b2LHv06v3qXcCBTsjQNKNjlHNyccJ+S8B08QDYYXlRbtIvpFnR4R3k+P38MA10uv+09fqO8T2Ig1GLyCQcT3GBrcLrB2XR5h9ZfnPWwDYuT1lE2ZyY4UmD97y0EOiq/8cjK3qVdpg9Vsj8bhWwAEp/c5RGAhS3eRw0dPy8zd6J4SnYUd4oQTt6Zs8j4YDDf3A7DceG3+0X3uE31t/6laSu2LJNoPYaLRdodSyRAU6OUCpPrxFKLbAH5i8PbyLgqGyehL0C3ME0ODMRWqGdXKpJp6mU/zfrGV92U93IX3Y06NC1RyapH/ll+G7yybvcwMQtZhA13N1JsU=
+script: ./.jrl-ci/run build
+after_success: ./.jrl-ci/run after_success
+after_failure: ./.jrl-ci/run after_failure
+before_install:
+- if [ $USE_PYTHON34 = true ]; then pushd .; pip install virtualenv; mkdir -p /tmp/_ci/virtualenv; virtualenv -p python3.4 3.4; source 3.4/bin/activate; popd; fi
+- ./.jrl-ci/dependencies/eigen-3.2
+- ./.jrl-ci/run  before_install
+matrix:
+  allow_failures:
+  - compiler: clang
