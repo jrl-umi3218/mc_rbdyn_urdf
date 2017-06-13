@@ -48,24 +48,44 @@ cdef class Limits(object):
       return self.impl.lower
     def __set__(self, value):
       assert(__EXPERT_MODE__)
+      for k, v in value.items():
+        if isinstance(k, unicode):
+          value.pop(k)
+          k = k.encode(u'ascii')
+          value[k] = v
       self.impl.lower = value
   property upper:
     def __get__(self):
       return self.impl.upper
     def __set__(self, value):
       assert(__EXPERT_MODE__)
+      for k, v in value.items():
+        if isinstance(k, unicode):
+          value.pop(k)
+          k = k.encode(u'ascii')
+          value[k] = v
       self.impl.upper = value
   property velocity:
     def __get__(self):
       return self.impl.velocity
     def __set__(self, value):
       assert(__EXPERT_MODE__)
+      for k, v in value.items():
+        if isinstance(k, unicode):
+          value.pop(k)
+          k = k.encode(u'ascii')
+          value[k] = v
       self.impl.velocity = value
   property torque:
     def __get__(self):
       return self.impl.torque
     def __set__(self, value):
       assert(__EXPERT_MODE__)
+      for k, v in value.items():
+        if isinstance(k, unicode):
+          value.pop(k)
+          k = k.encode(u'ascii')
+          value[k] = v
       self.impl.torque = value
 
 cdef Limits LimitsFromC(const c_mc_rbdyn_urdf.Limits & lim):
@@ -81,6 +101,8 @@ cdef class GeometryMesh(object):
       return self.impl.filename
     def __set__(self, value):
       assert(__EXPERT_MODE__)
+      if isinstance(value, unicode):
+        value = value.encode(u'ascii')
       self.impl.filename = value
   property scale:
     def __get__(self):
@@ -308,4 +330,9 @@ cdef URDFParserResult URDFParserResultFromC(const c_mc_rbdyn_urdf.URDFParserResu
     return res
 
 def rbdyn_from_urdf(content, fixed = True, filteredLinks = [], transformInertia = True, baseLink = "Root", withVirtualLinks = True):
+  if isinstance(content, unicode):
+    content = content.encode(u'ascii')
+  if isinstance(baseLink, unicode):
+    baseLink = baseLink.encode(u'ascii')
+  filteredLinks = [ fL.encode(u'ascii') if isinstance(fL, unicode) else fL for fL in filteredLinks ]
   return URDFParserResultFromC(c_mc_rbdyn_urdf.rbdyn_from_urdf(content, fixed, filteredLinks, transformInertia, baseLink, withVirtualLinks))

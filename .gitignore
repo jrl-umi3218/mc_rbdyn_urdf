@@ -2,3 +2,4 @@
 binding/python/setup.py
 binding/python/mc_rbdyn_urdf/mc_rbdyn_urdf.cpp
 binding/python/mc_rbdyn_urdf/__init__.py
+binding/python/mc_rbdyn_urdf/*.so

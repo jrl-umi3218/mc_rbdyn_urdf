@@ -182,7 +182,7 @@ def createRobot():
   geometry.data = mesh
   v2.geometry = geometry
 
-  visual = {"b0": [v1, v2]}
+  visual = {b"b0": [v1, v2]}
 
   return mb, mbc, mbg, limits, visual, collision_tf
 
@@ -208,7 +208,7 @@ class LoadTest(unittest.TestCase):
     self.assertEqual(limits.velocity, res.limits.velocity)
     self.assertEqual(limits.torque, res.limits.torque)
 
-    for i in xrange(mb.nrBodies()):
+    for i in range(mb.nrBodies()):
       b1 = mb.body(i)
       b2 = res.mb.body(i)
 
@@ -217,7 +217,7 @@ class LoadTest(unittest.TestCase):
       self.assertEqual(b1.inertia().momentum(), b2.inertia().momentum())
       self.assertEqual(b1.inertia().inertia(), b2.inertia().inertia())
 
-    for i in xrange(mb.nrJoints()):
+    for i in range(mb.nrJoints()):
       j1 = mb.joint(i)
       j2 = res.mb.joint(i)
 
