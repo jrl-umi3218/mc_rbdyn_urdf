@@ -17,17 +17,25 @@ public:
     bool isRight() const { return (_r != NULL); }
     operator bool() { return isRight(); }
     operator R() {
-        if(isRight())
-        {
-            return *_r;
-        } else {
-            throw std::runtime_error(*_l);
-        } }
+            return fromRight();
+        }
     L fromLeft  () const { assert(isLeft ()); return L(*_l); }
-    R fromRight () const { assert(isRight()); return R(*_r); }
+    R fromRight () const {
+        if(isRight()) {
+            return R(*_r);
+        } else {
+            throw std::runtime_error(L(*_l));
+        }
+    }
     ~either() {
-        if (_l != NULL) delete _l;
-        if (_r != NULL) delete _r;
+        if(!std::is_pointer<L>())
+        {
+            if (_l != NULL) delete _l;
+        }
+        if(!std::is_pointer<R>())
+        {
+            if (_r != NULL) delete _r;
+        }
     }
 private:
     L* _l; R* _r;
