@@ -264,31 +264,31 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     res.mbg.addBody(b);
   }
 
-  std::vector<tinyxml2::XMLElement *> joints;
+  std::vector<MaybeElement> joints;
   // Extract joint elements from the document, remove joints that link with filtered links
   {
-    tinyxml2::XMLElement * joint = robot->FirstChildElement("joint");
+    MaybeElement joint = MaybeElement::right(robot) >> firstChildElement("joint");
     while(joint)
     {
-      std::string parent_link = joint->FirstChildElement("parent")->Attribute("link");
-      std::string child_link = joint->FirstChildElement("child")->Attribute("link");
+      std::string parent_link = joint >> firstChildElement("parent") >> attribute("link");
+      std::string child_link = joint >> firstChildElement("child") >> attribute("link");
       if(std::find(filteredLinks.begin(), filteredLinks.end(), child_link) == filteredLinks.end() &&
          std::find(filteredLinks.begin(), filteredLinks.end(), parent_link) == filteredLinks.end())
       {
         joints.push_back(joint);
       }
-      joint = joint->NextSiblingElement("joint");
+      joint = joint >> nextSiblingElement("joint");
     }
   }
 
-  for(tinyxml2::XMLElement * jointDom : joints)
+  for(MaybeElement& jointDom : joints)
   {
-    std::string jointName = jointDom->Attribute("name");
-    std::string jointType = jointDom->Attribute("type");
+    std::string jointName = jointDom >> attribute("name");
+    std::string jointType = jointDom >> attribute("type");
 
     // Static transformation
     sva::PTransformd staticTransform = sva::PTransformd::Identity();
-    tinyxml2::XMLElement * originDom = jointDom->FirstChildElement("origin");
+    MaybeElement originDom = jointDom >> firstChildElement("origin");
     if(originDom)
     {
       Eigen::Vector3d staticT = attrToVector(*originDom, "xyz", Eigen::Vector3d(0,0,0));
@@ -298,7 +298,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
 
     // Read the joint axis
     Eigen::Vector3d axis = Eigen::Vector3d::UnitZ();
-    tinyxml2::XMLElement * axisDom = jointDom->FirstChildElement("axis");
+    tinyxml2::XMLElement * axisDom = jointDom >> firstChildElement("axis");
     if(axisDom)
     {
       axis = attrToVector(*axisDom, "xyz").normalized();
@@ -306,23 +306,21 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     rbd::Joint::Type type = rbdynFromUrdfJoint(jointType, (jointName.length() >= sphericalSuffix.length()
                             && jointName.substr(jointName.length() - sphericalSuffix.length(), sphericalSuffix.length()) == sphericalSuffix));
 
-    tinyxml2::XMLElement * parentDom = jointDom->FirstChildElement("parent");
-    std::string jointParent = parentDom->Attribute("link");
+    MaybeElement parentDom = jointDom >> firstChildElement("parent");
+    std::string jointParent = parentDom >> attribute("link");
 
-    tinyxml2::XMLElement * childDom = jointDom->FirstChildElement("child");
-    std::string jointChild = childDom->Attribute("link");
+    MaybeElement childDom = jointDom >> firstChildElement("child");
+    std::string jointChild = childDom >> attribute("link");
 
     rbd::Joint j(type, axis, true, jointName);
 
     // Check if this is a mimic joint
-    tinyxml2::XMLElement * mimicDom = jointDom->FirstChildElement("mimic");
+    MaybeElement mimicDom = jointDom >> firstChildElement("mimic");
     if(mimicDom)
     {
-      std::string mimicJoint = mimicDom->Attribute("joint");
-      double multiplier = 1.0;
-      double offset = 0.0;
-      mimicDom->QueryDoubleAttribute("multiplier", &multiplier);
-      mimicDom->QueryDoubleAttribute("offset", &offset);
+      std::string mimicJoint = mimicDom >> attribute("joint");
+      double multiplier = mimicDom >> doubleAttribute("multiplier", 1.0);
+      double offset = mimicDom >> doubleAttribute("offset", 0.0);
       j.makeMimic(mimicJoint, multiplier, offset);
     }
 
@@ -336,7 +334,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     std::vector<double> effort(static_cast<size_t>(j.dof()), INFINITY);
     std::vector<double> velocity(static_cast<size_t>(j.dof()), INFINITY);
 
-    tinyxml2::XMLElement * limitDom = jointDom->FirstChildElement("limit");
+    MaybeElement limitDom = jointDom >> firstChildElement("limit");
     if(limitDom && j.type() != rbd::Joint::Fixed)
     {
       if(jointType != "continuous")

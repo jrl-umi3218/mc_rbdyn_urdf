@@ -26,6 +26,23 @@ namespace mc_rbdyn_urdf
     };
   }
 
+  std::function<MaybeElement(tinyxml2::XMLElement*)>
+  nextSiblingElement(const std::string& tag)
+  {
+    return [&tag](tinyxml2::XMLElement * e)
+    {
+      auto res = e->NextSiblingElement(tag.c_str());
+      if(res)
+      {
+        return MaybeElement::right(res);
+      }
+      else
+      {
+        return MaybeElement::left("No child named " + tag);
+      }
+    };
+  }
+
   std::function<MaybeDouble(tinyxml2::XMLElement*)>
   doubleAttribute(const std::string& attr)
   {
