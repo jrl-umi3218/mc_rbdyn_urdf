@@ -89,7 +89,7 @@ Eigen::Matrix3d RPY(const std::vector<double> rpy)
   if(rpy.size() != 3)
   {
     std::cerr << "Cannot convert RPY vector of size " << rpy.size() << " to matrix" << std::endl;
-    throw(std::string("bad vector"));
+    throw(std::runtime_error("Bad vector"));
   }
   return RPY(rpy[0], rpy[1], rpy[2]);
 }
