@@ -235,20 +235,18 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
          child != nullptr; child = child->NextSiblingElement("visual"))
     {
       Visual v;
-      tinyxml2::XMLElement *geometryDom = child->FirstChildElement("geometry");
+      MaybeElement geometryDom = MaybeElement::right(child) >> firstChildElement("geometry");
       if (geometryDom)
       {
-        tinyxml2::XMLElement *meshDom = geometryDom->FirstChildElement("mesh");
+        MaybeElement meshDom = geometryDom >> firstChildElement("mesh");
         if (meshDom)
         {
           v.origin = originFromTag(child);
           v.geometry.type = Geometry::Type::MESH;
           auto& mesh = boost::get<Geometry::Mesh>(v.geometry.data);
-          mesh.filename = meshDom->Attribute("filename");
-          // Optional scale
-          double scale = 1.;
-          meshDom->QueryDoubleAttribute( "scale", &scale );
-          mesh.scale = scale;
+          mesh.filename = (meshDom >> attribute("filename")).fromRight();
+          // Optional scale, defaults to 1.
+          mesh.scale = meshDom >> doubleAttribute("scale", 1.);
         }
         else
         {
@@ -375,6 +373,11 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
   URDFParserResult res;
 
   std::string baseLink = parseMultiBodyGraphFromURDF(res, content, filteredLinksIn, transformInertia, baseLinkIn, withVirtualLinks, sphericalSuffix);
+
+  if(!res.mbg.nrNodes())
+  {
+    throw std::runtime_error("Unable to extract valid robot");
+  }
 
   res.mb = res.mbg.makeMultiBody(baseLink, fixed);
   res.mbc = rbd::MultiBodyConfig(res.mb);
