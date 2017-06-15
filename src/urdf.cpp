@@ -158,19 +158,19 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     std::cerr << "No robot tag in the URDF, parsing will stop now" << std::endl;
     return "";
   }
-  std::vector<tinyxml2::XMLElement *> links;
+  std::vector<MaybeElement> links;
   std::vector<std::string> filteredLinks = filteredLinksIn;
   // Extract link elements from the document, remove filtered links
   {
-    tinyxml2::XMLElement * link = robot->FirstChildElement("link");
+    MaybeElement link = MaybeElement::right(robot) >> firstChildElement("link");
     while(link)
     {
-      std::string linkName = link->Attribute("name");
+      std::string linkName = link >> attribute("name");
       if(std::find(filteredLinks.begin(), filteredLinks.end(), linkName) == filteredLinks.end())
       {
         if(not withVirtualLinks)
         {
-          if(link->FirstChildElement("inertial"))
+          if(link >> firstChildElement("inertial"))
           {
             links.push_back(link);
           }
@@ -184,7 +184,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
           links.push_back(link);
         }
       }
-      link = link->NextSiblingElement("link");
+      link = link >> nextSiblingElement("link");
     }
   }
 
@@ -194,17 +194,17 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     return "";
   }
 
-  std::string baseLink = baseLinkIn == "" ? links[0]->Attribute("name") : baseLinkIn;
+  std::string baseLink = baseLinkIn == "" ? links[0] >> attribute("name") : baseLinkIn;
 
-  for(tinyxml2::XMLElement * linkDom : links)
+  for(MaybeElement linkDom : links)
   {
-    std::string linkName = linkDom->Attribute("name");
+    std::string linkName = linkDom >> attribute("name");
     double mass = 0.0;
     Eigen::Vector3d com = Eigen::Vector3d::Zero();
     std::vector<double> comRPY = {0.0, 0.0, 0.0};
     Eigen::Matrix3d inertia_o = Eigen::Matrix3d::Zero();
 
-    MaybeElement inertialDom  = MaybeElement::right(linkDom) >> firstChildElement("inertial");
+    MaybeElement inertialDom  = linkDom >> firstChildElement("inertial");
     if(inertialDom)
     {
       MaybeElement originDom = inertialDom >> firstChildElement("origin");
@@ -230,11 +230,11 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     }
 
     // Parse all visual tags. There may be several per link
-    for (tinyxml2::XMLElement *child = linkDom->FirstChildElement("visual");
-         child != nullptr; child = child->NextSiblingElement("visual"))
+    for (MaybeElement child = linkDom >> firstChildElement("visual");
+         child; child = child >> nextSiblingElement("visual"))
     {
       Visual v;
-      MaybeElement geometryDom = MaybeElement::right(child) >> firstChildElement("geometry");
+      MaybeElement geometryDom = child >> firstChildElement("geometry");
       if (geometryDom)
       {
         MaybeElement meshDom = geometryDom >> firstChildElement("mesh");
@@ -251,8 +251,8 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
         {
           std::cerr << "Warning: only mesh geometry is supported, visual element has been ignored" << std::endl;
         }
-        const char* name = child->Attribute("name");
-        if(name) v.name = name;
+        MaybeString name = child >> attribute("name");
+        if(name) v.name = name.fromRight();
         res.visual[linkName].push_back(v);
       }
     }
