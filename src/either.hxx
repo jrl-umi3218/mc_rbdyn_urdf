@@ -11,36 +11,41 @@ using std::function;
 template<class L,class R>
 class either {
 public:
-    static either<L,R> left (L l) { return either(&l,NULL); }
-    static either<L,R> right(R r) { return either(NULL,&r); }
-    bool isLeft () const { return (_l != NULL); }
-    bool isRight() const { return (_r != NULL); }
+    static either<L,R> left (L l) { return either(&l,NULL,false); }
+    static either<L,R> right(R r) { return either(NULL,&r,true); }
+
+    bool isLeft () const { return !_isRight; }
+    bool isRight() const { return _isRight; }
     operator bool() { return isRight(); }
     operator R() {
             return fromRight();
         }
-    L fromLeft  () const { assert(isLeft ()); return L(*_l); }
+    L fromLeft  () const { assert(isLeft ()); return _l; }
     R fromRight () const {
         if(isRight()) {
-            return R(*_r);
+            return _r;
         } else {
-            throw std::runtime_error(L(*_l));
+            throw std::runtime_error(_l);
         }
     }
-    ~either() {
-        if(!std::is_pointer<L>())
-        {
-            if (_l != NULL) delete _l;
-        }
-        if(!std::is_pointer<R>())
-        {
-            if (_r != NULL) delete _r;
-        }
-    }
+    ~either() {}
+
 private:
-    L* _l; R* _r;
-    either(const L* l,const R* r) : _l(l != NULL ? new L(*l) : NULL)
-                                  , _r(r != NULL ? new R(*r) : NULL) {}
+    bool _isRight;
+    L _l;
+    R _r;
+    either(const L* l,const R* r, bool isRight)
+        : _isRight(isRight)
+    {
+        if(isRight)
+        {
+            _r = R(*r);
+        }
+        else
+        {
+            _l = L(*l);
+        }
+    }
 };
 
 template<class L,class R>
