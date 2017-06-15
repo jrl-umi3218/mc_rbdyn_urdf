@@ -204,9 +204,8 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     std::vector<double> comRPY = {0.0, 0.0, 0.0};
     Eigen::Matrix3d inertia_o = Eigen::Matrix3d::Zero();
 
-    MaybeElement inertialDom  = MaybeElement::right(linkDom->FirstChildElement("inertial"));
-    bool isVirtual = inertialDom;
-    if(not isVirtual)
+    MaybeElement inertialDom  = MaybeElement::right(linkDom) >> firstChildElement("inertial");
+    if(inertialDom)
     {
       MaybeElement originDom = inertialDom >> firstChildElement("origin");
       MaybeElement massDom = inertialDom >> firstChildElement("mass");
