@@ -26,6 +26,8 @@
 #include <cmath>
 #include <ciso646>
 
+#include "safetinyxml.hxx"
+
 namespace mc_rbdyn_urdf
 {
 
@@ -202,13 +204,13 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     std::vector<double> comRPY = {0.0, 0.0, 0.0};
     Eigen::Matrix3d inertia_o = Eigen::Matrix3d::Zero();
 
-    tinyxml2::XMLElement * inertialDom = linkDom->FirstChildElement("inertial");
-    bool isVirtual = (inertialDom == 0);
+    MaybeElement inertialDom  = MaybeElement::right(linkDom->FirstChildElement("inertial"));
+    bool isVirtual = inertialDom;
     if(not isVirtual)
     {
-      tinyxml2::XMLElement * originDom = inertialDom->FirstChildElement("origin");
-      tinyxml2::XMLElement * massDom = inertialDom->FirstChildElement("mass");
-      tinyxml2::XMLElement * inertiaDom = inertialDom->FirstChildElement("inertia");
+      MaybeElement originDom = inertialDom >> firstChildElement("origin");
+      MaybeElement massDom = inertialDom >> firstChildElement("mass");
+      MaybeElement inertiaDom = inertialDom >> firstChildElement("inertia");
 
       if(originDom)
       {
@@ -216,7 +218,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
         comRPY = attrToList(*originDom, "rpy", {0.0, 0.0, 0.0});
       }
       Eigen::Matrix3d comFrame = RPY(comRPY);
-      mass = massDom->DoubleAttribute("value");
+      mass = inertialDom >> firstChildElement("mass") >> doubleAttribute("value");
       Eigen::Matrix3d inertia = readInertia(*inertiaDom);
       if(transformInertia)
       {
