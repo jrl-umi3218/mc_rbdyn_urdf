@@ -306,11 +306,9 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     rbd::Joint::Type type = rbdynFromUrdfJoint(jointType, (jointName.length() >= sphericalSuffix.length()
                             && jointName.substr(jointName.length() - sphericalSuffix.length(), sphericalSuffix.length()) == sphericalSuffix));
 
-    MaybeElement parentDom = jointDom >> firstChildElement("parent");
-    std::string jointParent = parentDom >> attribute("link");
+    std::string jointParent = jointDom >> firstChildElement("parent") >> attribute("link");
 
-    MaybeElement childDom = jointDom >> firstChildElement("child");
-    std::string jointChild = childDom >> attribute("link");
+    std::string jointChild = jointDom >> firstChildElement("child") >> attribute("link");
 
     rbd::Joint j(type, axis, true, jointName);
 
