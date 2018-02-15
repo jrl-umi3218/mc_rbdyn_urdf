@@ -18,8 +18,9 @@
 cmake_minimum_required(VERSION 2.8)
 
 include(cmake/base.cmake)
-include(cmake/eigen.cmake)
 include(cmake/boost.cmake)
+include(cmake/cpack.cmake)
+include(cmake/eigen.cmake)
 include(cmake/msvc-specific.cmake)
 
 set(PROJECT_NAME mc_rbdyn_urdf)
@@ -28,11 +29,13 @@ set(PROJECT_URL "https://github.com/jrl-umi3218/mc_rbdyn_urdf")
 set(PROJECT_DEBUG_POSTFIX "_d")
 
 set(DOXYGEN_USE_MATHJAX "YES")
+SET(CXX_DISABLE_WERROR True)
 setup_project()
 
 option(PYTHON_BINDING "Generate python binding." ON)
 option(PYTHON_BINDING_USER_INSTALL "Install the Python bindings in user space" OFF)
 option(DISABLE_TESTS "Disable unit tests." OFF)
+option(BENCHMARKS "Generate benchmarks." OFF)
 
 if(NOT WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++0x -pedantic")
@@ -63,3 +66,7 @@ endif()
 pkg_config_append_libs(mc_rbdyn_urdf)
 
 setup_project_finalize()
+SETUP_PROJECT_CPACK()
+
+SETUP_PROJECT_PACKAGE_FINALIZE()
+
