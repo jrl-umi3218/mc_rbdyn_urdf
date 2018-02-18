@@ -62,8 +62,6 @@ if(${PYTHON_BINDING})
 endif()
 
 pkg_config_append_libs(mc_rbdyn_urdf)
-
 setup_project_finalize()
-
 SETUP_PROJECT_PACKAGE_FINALIZE()
 
