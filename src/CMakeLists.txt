@@ -21,7 +21,6 @@ set(SOURCES
 set(HEADERS
   ../include/mc_rbdyn_urdf/api.h
   ../include/mc_rbdyn_urdf/urdf.h
-  ../include/mc_rbdyn_urdf/kukaiiwaURDF.h
 )
 
 add_library(mc_rbdyn_urdf SHARED ${SOURCES} ${HEADERS})
@@ -33,11 +32,11 @@ target_compile_definitions(mc_rbdyn_urdf PRIVATE "-DMCRBDYNURDF_BUILDING")
 
 set(INSTALL_PATH include/mc_rbdyn_urdf)
 install(FILES ${HEADERS} DESTINATION ${INSTALL_PATH})
-install(TARGETS mc_rbdyn_urdf
-EXPORT "${TARGETS_EXPORT_NAME}"
-LIBRARY DESTINATION "lib"
-ARCHIVE DESTINATION "lib"
-RUNTIME DESTINATION "bin"
-INCLUDES DESTINATION "${INCLUDE_INSTALL_DIR}"
+install(
+    TARGETS mc_rbdyn_urdf
+    EXPORT "${TARGETS_EXPORT_NAME}"
+    LIBRARY DESTINATION "lib"
+    ARCHIVE DESTINATION "lib"
+    RUNTIME DESTINATION "bin"
+    INCLUDES DESTINATION "${INCLUDE_INSTALL_DIR}"
 )
-install(FILES ${HEADERS} DESTINATION ${INCLUDE_INSTALL_DESTINATION})
