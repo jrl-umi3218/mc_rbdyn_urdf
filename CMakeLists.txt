@@ -28,7 +28,7 @@ set(PROJECT_URL "https://github.com/jrl-umi3218/mc_rbdyn_urdf")
 set(PROJECT_DEBUG_POSTFIX "_d")
 
 set(DOXYGEN_USE_MATHJAX "YES")
-SET(CXX_DISABLE_WERROR True)
+set(CXX_DISABLE_WERROR True)
 setup_project()
 
 option(PYTHON_BINDING "Generate python binding." ON)
@@ -63,5 +63,5 @@ endif()
 
 pkg_config_append_libs(mc_rbdyn_urdf)
 setup_project_finalize()
-SETUP_PROJECT_PACKAGE_FINALIZE()
+setup_project_package_finalize()
 
