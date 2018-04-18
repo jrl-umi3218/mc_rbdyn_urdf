@@ -133,7 +133,20 @@ bool operator==(const Geometry::Cylinder & b1, const Geometry::Cylinder & b2)
 
 bool operator==(const Geometry& g1, const Geometry& g2)
 {
-  return g1.type == g2.type;// && g1.data == g2.data;
+  if(g1.type != g2.type) return false;
+  switch(g1.type)
+  {
+    case Geometry::MESH:
+      return g1.data.m == g2.data.m;
+    case Geometry::BOX:
+      return g1.data.b == g2.data.b;
+    case Geometry::SPHERE:
+      return g1.data.s == g2.data.s;
+    case Geometry::CYLINDER:
+      return g1.data.c == g2.data.c;
+    default:
+      return true;
+  };
 }
 
 bool operator==(const Visual & v1, const Visual & v2)
