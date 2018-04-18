@@ -42,6 +42,63 @@ double attrToDouble(const tinyxml2::XMLElement & dom,
   return def;
 }
 
+Geometry::~Geometry()
+{
+  if(type == MESH)
+  {
+    using MeshT = Geometry::Mesh;
+    data.m.~MeshT();
+  }
+}
+
+Geometry::Geometry(const Geometry & rhs)
+{
+  type = rhs.type;
+  switch(type)
+  {
+    case MESH:
+      new (&data.m) Geometry::Mesh(rhs.data.m);
+      break;
+    case BOX:
+      data.b = rhs.data.b;
+      break;
+    case CYLINDER:
+      data.c = rhs.data.c;
+      break;
+    case SPHERE:
+      data.s = rhs.data.s;
+      break;
+    case UNKNOWN:
+      data.u = rhs.data.u;
+      break;
+  }
+}
+
+Geometry & Geometry::operator=(const Geometry & rhs)
+{
+  if(this == &rhs) { return *this; }
+  type = rhs.type;
+  switch(type)
+  {
+    case MESH:
+      new (&data.m) Geometry::Mesh(rhs.data.m);
+      break;
+    case BOX:
+      data.b = rhs.data.b;
+      break;
+    case CYLINDER:
+      data.c = rhs.data.c;
+      break;
+    case SPHERE:
+      data.s = rhs.data.s;
+      break;
+    case UNKNOWN:
+      data.u = rhs.data.u;
+      break;
+  }
+  return *this;
+}
+
 std::vector<double> attrToList(const tinyxml2::XMLElement & dom,
                                const std::string & attr,
                                const std::vector<double> & def)
@@ -269,10 +326,10 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult & res,
         {
           v.origin = originFromTag(child);
           v.geometry.type = Geometry::Type::MESH;
-          auto & mesh = boost::get<Geometry::Mesh>(v.geometry.data);
-          mesh.filename = meshDom->Attribute("filename");
           // Optional scale
-          mesh.scale = attrToDouble(*meshDom, "scale", 1.0);
+          double scale = 1.;
+          meshDom->QueryDoubleAttribute( "scale", &scale );
+          new (&v.geometry.data.m) Geometry::Mesh{std::string(meshDom->Attribute("filename")), scale};
         }
         else
         {

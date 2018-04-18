@@ -10,41 +10,41 @@ namespace mc_rbdyn_urdf
 {
   const Geometry::Mesh& getMesh(const Geometry & geom)
   {
-    return boost::get<Geometry::Mesh>(geom.data);
+    return geom.data.m;
   }
 
   const Geometry::Box& getBox(const Geometry & geom)
   {
-    return boost::get<Geometry::Box>(geom.data);
+    return geom.data.b;
   }
 
   const Geometry::Cylinder& getCylinder(const Geometry & geom)
   {
-    return boost::get<Geometry::Cylinder>(geom.data);
+    return geom.data.c;
   }
 
   const Geometry::Sphere& getSphere(const Geometry & geom)
   {
-    return boost::get<Geometry::Sphere>(geom.data);
+    return geom.data.s;
   }
 
   void setMesh(Geometry & geom, const Geometry::Mesh & data)
   {
-    geom.data = data;
+    new (&geom.data.m) Geometry::Mesh{data};
   }
 
   void setBox(Geometry & geom, const Geometry::Box & data)
   {
-    geom.data = data;
+    geom.data.b = data;
   }
 
   void setCylinder(Geometry & geom, const Geometry::Cylinder & data)
   {
-    geom.data = data;
+    geom.data.c = data;
   }
 
   void setSphere(Geometry & geom, const Geometry::Sphere & data)
   {
-    geom.data = data;
+    geom.data.s = data;
   }
 }
