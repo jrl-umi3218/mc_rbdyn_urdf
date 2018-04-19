@@ -116,6 +116,8 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalS
     else
       return rbd::Joint::Free;
   }
+  else if(type == "ball")
+    return rbd::Joint::Spherical;
   else if(type == "fixed")
     return rbd::Joint::Fixed;
   std::cerr << "Unknown type in URDF " << type << std::endl;
