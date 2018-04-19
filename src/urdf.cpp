@@ -112,10 +112,15 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalS
   else if(type == "floating")
   {
     if (hasSphericalSuffix)
-      return rbd::Joint::Spherical;
+      {
+        std::cerr << "hasSphericalSuffix is deprecated and will be deleted in future release. Please use type=ball instead (style of sdf format)" << std::endl;
+        return rbd::Joint::Spherical;
+      }
     else
       return rbd::Joint::Free;
   }
+  else if(type == "ball")
+    return rbd::Joint::Spherical;
   else if(type == "fixed")
     return rbd::Joint::Fixed;
   std::cerr << "Unknown type in URDF " << type << std::endl;
