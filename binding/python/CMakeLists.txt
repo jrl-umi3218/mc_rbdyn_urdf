@@ -15,32 +15,32 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mc_rbdyn_urdf.  If not, see <http://www.gnu.org/licenses/>.
 
-macro(GET_MC_RBDYN_URDF_PROPERTY PROPERTY)
-  get_target_property(MC_RBDYN_URDF_${PROPERTY} mc_rbdyn_urdf ${PROPERTY})
-  if(NOT MC_RBDYN_URDF_${PROPERTY})
-    set(MC_RBDYN_URDF_${PROPERTY} "")
-  endif()
-endmacro()
-GET_MC_RBDYN_URDF_PROPERTY(COMPILE_FLAGS)
-GET_MC_RBDYN_URDF_PROPERTY(INCLUDE_DIRECTORIES)
-GET_MC_RBDYN_URDF_PROPERTY(LINK_FLAGS)
-GET_MC_RBDYN_URDF_PROPERTY(LINK_LIBRARIES)
-GET_MC_RBDYN_URDF_PROPERTY(LOCATION)
-configure_file(setup.in.py ${CMAKE_CURRENT_SOURCE_DIR}/setup.py)
+set(SETUP_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>")
+if(DEFINED CMAKE_BUILD_TYPE)
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+else()
+  foreach(CFG ${CMAKE_CONFIGURATION_TYPES})
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${CFG}")
+  endforeach()
+endif()
+configure_file(setup.in.py "${CMAKE_CURRENT_BINARY_DIR}/setup.in.py")
+FILE(GENERATE
+      OUTPUT "${SETUP_LOCATION}/setup.py"
+      INPUT  "${CMAKE_CURRENT_BINARY_DIR}/setup.in.py")
+
 
 # Build the bindings locally at build time for test purposes
 add_custom_target(mc_rbdyn_urdf-python-bindings ALL
-  COMMAND python setup.py build_ext --inplace
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND} -E chdir "${SETUP_LOCATION}" python setup.py build_ext --inplace
   COMMENT "Generating local mc_rbdyn_urdf Python bindings"
   DEPENDS include/mc_rbdyn_urdf_wrapper.hpp mc_rbdyn_urdf/c_mc_rbdyn_urdf.pxd mc_rbdyn_urdf/mc_rbdyn_urdf.pxd mc_rbdyn_urdf/mc_rbdyn_urdf.pyx
+  SOURCES include/mc_rbdyn_urdf_wrapper.hpp mc_rbdyn_urdf/c_mc_rbdyn_urdf.pxd mc_rbdyn_urdf/mc_rbdyn_urdf.pxd mc_rbdyn_urdf/mc_rbdyn_urdf.pyx
 )
 
 if(NOT ${DISABLE_TESTS})
   if(NOT DEFINED PYTHON_DEB_ROOT)
     add_test(NAME PythonBindingsTest
-      COMMAND nosetests
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMAND ${CMAKE_COMMAND} -E chdir "$<TARGET_FILE_DIR:mc_rbdyn_urdf>" nosetests ${SETUP_LOCATION}
     )
   endif()
 endif()
@@ -52,15 +52,15 @@ endif()
 # Install the bindings
 if(DEFINED PYTHON_DEB_ROOT)
   add_custom_target(install-mc_rbdyn_urdf-python-bindings
-    COMMAND python setup.py install --root=${PYTHON_DEB_ROOT} --install-layout=deb && python3 setup.py install --root=${PYTHON_DEB_ROOT} --install-layout=deb
+    COMMAND ${CMAKE_COMMAND} -E chdir "${SETUP_LOCATION}" python setup.py install --root=${PYTHON_DEB_ROOT} --install-layout=deb && python3 setup.py install --root=${PYTHON_DEB_ROOT} --install-layout=deb
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Install mc_rbdyn_urdf Python bindings (Debian package)"
   )
 else()
   add_custom_target(install-mc_rbdyn_urdf-python-bindings
-    COMMAND pip install . ${PIP_EXTRA_OPTIONS}
+    COMMAND ${CMAKE_COMMAND} -E chdir "${SETUP_LOCATION}" pip install . ${PIP_EXTRA_OPTIONS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Install mc_rbdyn_urdf Python bindings"
   )
 endif()
-install(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_MAKE_PROGRAM} install-mc_rbdyn_urdf-python-bindings)")
+install(CODE "EXECUTE_PROCESS(COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --config \${CMAKE_INSTALL_CONFIG_NAME} --target install-mc_rbdyn_urdf-python-bindings)")
