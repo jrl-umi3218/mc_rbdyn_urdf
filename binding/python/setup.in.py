@@ -25,21 +25,39 @@ except ImportError:
 
 from Cython.Build import cythonize
 
+import filecmp
 import hashlib
 import os
+import shutil
 import subprocess
 
 from numpy import get_include as numpy_get_include
 
 win32_build = os.name == 'nt'
+debug_build = "$<CONFIGURATION>".lower() == "debug"
+
+def exists_or_create(path):
+  if not os.path.exists(path):
+    os.makedirs(path)
+
+def copy_if_different(f):
+  in_ = '@CMAKE_CURRENT_SOURCE_DIR@/{}'.format(f)
+  out_ = '{}/{}'.format(this_path, f)
+  if not os.path.exists(out_) or not filecmp.cmp(in_, out_):
+    shutil.copyfile(in_, out_)
 
 this_path  = os.path.dirname(os.path.realpath(__file__))
+exists_or_create(this_path + '/mc_rbdyn_urdf')
+exists_or_create(this_path + '/tests')
 with open(this_path + '/mc_rbdyn_urdf/__init__.py', 'w') as fd:
     fd.write('from . mc_rbdyn_urdf import *\n')
+src_files = ['mc_rbdyn_urdf/mc_rbdyn_urdf.pyx', 'mc_rbdyn_urdf/c_mc_rbdyn_urdf.pxd', 'mc_rbdyn_urdf/mc_rbdyn_urdf.pxd', 'mc_rbdyn_urdf/c_mc_rbdyn_urdf_private.pxd']
+[copy_if_different(f) for f in src_files]
+copy_if_different('tests/test_mc_rbdyn_urdf.py')
 
 sha512 = hashlib.sha512()
-src_files = ['mc_rbdyn_urdf/mc_rbdyn_urdf.pyx', 'mc_rbdyn_urdf/c_mc_rbdyn_urdf.pxd', 'mc_rbdyn_urdf/mc_rbdyn_urdf.pxd', 'include/mc_rbdyn_urdf_wrapper.hpp']
-src_files = [ '{}/{}'.format(this_path, f) for f in src_files ]
+src_files.append('include/mc_rbdyn_urdf_wrapper.hpp')
+src_files = [ '{}/{}'.format('@CMAKE_CURRENT_SOURCE_DIR@', f) for f in src_files ]
 for f in src_files:
   chunk = 2**16
   with open(f, 'r') as fd:
@@ -54,10 +72,14 @@ version_hash = sha512.hexdigest()[:7]
 class pkg_config(object):
   def __init__(self):
     self.compile_args = []
-    self.include_dirs = [ x for x in '@MC_RBDYN_URDF_INCLUDE_DIRECTORIES@'.split(';') if len(x) ]
-    self.library_dirs = [ x for x in '@MC_RBDYN_URDF_LINK_FLAGS@'.split(';') if len(x) ]
-    self.libraries = ['mc_rbdyn_urdf']
-    mc_rbdyn_urdf_location = '@MC_RBDYN_URDF_LOCATION@'
+    self.include_dirs = [ x for x in '$<TARGET_PROPERTY:mc_rbdyn_urdf,INCLUDE_DIRECTORIES>'.split(';') if len(x) ]
+    self.include_dirs.append('@CMAKE_CURRENT_SOURCE_DIR@/include')
+    self.library_dirs = [ x for x in '$<TARGET_PROPERTY:mc_rbdyn_urdf,LINK_FLAGS>'.split(';') if len(x) ]
+    if debug_build:
+      self.libraries = ['mc_rbdyn_urdf_d']
+    else:
+      self.libraries = ['mc_rbdyn_urdf']
+    mc_rbdyn_urdf_location = '$<TARGET_FILE:mc_rbdyn_urdf>'
     self.library_dirs.append(os.path.dirname(mc_rbdyn_urdf_location))
     self.found = True
 
@@ -70,7 +92,6 @@ if win32_build:
 
 def GenExtension(name, pkg, ):
   pyx_src = name.replace('.', '/')
-  cpp_src = pyx_src + '.cpp'
   pyx_src = pyx_src + '.pyx'
   ext_src = pyx_src
   if pkg.found:
