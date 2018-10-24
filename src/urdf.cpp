@@ -26,6 +26,8 @@
 #include <cmath>
 #include <ciso646>
 
+#include "safetinyxml.hxx"
+
 namespace mc_rbdyn_urdf
 {
 
@@ -87,7 +89,7 @@ Eigen::Matrix3d RPY(const std::vector<double> rpy)
   if(rpy.size() != 3)
   {
     std::cerr << "Cannot convert RPY vector of size " << rpy.size() << " to matrix" << std::endl;
-    throw(std::string("bad vector"));
+    throw(std::runtime_error("Bad vector"));
   }
   return RPY(rpy[0], rpy[1], rpy[2]);
 }
@@ -158,19 +160,19 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     std::cerr << "No robot tag in the URDF, parsing will stop now" << std::endl;
     return "";
   }
-  std::vector<tinyxml2::XMLElement *> links;
+  std::vector<MaybeElement> links;
   std::vector<std::string> filteredLinks = filteredLinksIn;
   // Extract link elements from the document, remove filtered links
   {
-    tinyxml2::XMLElement * link = robot->FirstChildElement("link");
+    MaybeElement link = MaybeElement::right(robot) >> firstChildElement("link");
     while(link)
     {
-      std::string linkName = link->Attribute("name");
+      std::string linkName = link >> attribute("name");
       if(std::find(filteredLinks.begin(), filteredLinks.end(), linkName) == filteredLinks.end())
       {
         if(not withVirtualLinks)
         {
-          if(link->FirstChildElement("inertial"))
+          if(link >> firstChildElement("inertial"))
           {
             links.push_back(link);
           }
@@ -184,7 +186,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
           links.push_back(link);
         }
       }
-      link = link->NextSiblingElement("link");
+      link = link >> nextSiblingElement("link");
     }
   }
 
@@ -194,23 +196,22 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     return "";
   }
 
-  std::string baseLink = baseLinkIn == "" ? links[0]->Attribute("name") : baseLinkIn;
+  std::string baseLink = baseLinkIn == "" ? links[0] >> attribute("name") : baseLinkIn;
 
-  for(tinyxml2::XMLElement * linkDom : links)
+  for(MaybeElement linkDom : links)
   {
-    std::string linkName = linkDom->Attribute("name");
+    std::string linkName = linkDom >> attribute("name");
     double mass = 0.0;
     Eigen::Vector3d com = Eigen::Vector3d::Zero();
     std::vector<double> comRPY = {0.0, 0.0, 0.0};
     Eigen::Matrix3d inertia_o = Eigen::Matrix3d::Zero();
 
-    tinyxml2::XMLElement * inertialDom = linkDom->FirstChildElement("inertial");
-    bool isVirtual = (inertialDom == 0);
-    if(not isVirtual)
+    MaybeElement inertialDom  = linkDom >> firstChildElement("inertial");
+    if(inertialDom)
     {
-      tinyxml2::XMLElement * originDom = inertialDom->FirstChildElement("origin");
-      tinyxml2::XMLElement * massDom = inertialDom->FirstChildElement("mass");
-      tinyxml2::XMLElement * inertiaDom = inertialDom->FirstChildElement("inertia");
+      MaybeElement originDom = inertialDom >> firstChildElement("origin");
+      MaybeElement massDom = inertialDom >> firstChildElement("mass");
+      MaybeElement inertiaDom = inertialDom >> firstChildElement("inertia");
 
       if(originDom)
       {
@@ -218,7 +219,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
         comRPY = attrToList(*originDom, "rpy", {0.0, 0.0, 0.0});
       }
       Eigen::Matrix3d comFrame = RPY(comRPY);
-      mass = massDom->DoubleAttribute("value");
+      mass = inertialDom >> firstChildElement("mass") >> doubleAttribute("value");
       Eigen::Matrix3d inertia = readInertia(*inertiaDom);
       if(transformInertia)
       {
@@ -231,31 +232,29 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     }
 
     // Parse all visual tags. There may be several per link
-    for (tinyxml2::XMLElement *child = linkDom->FirstChildElement("visual");
-         child != nullptr; child = child->NextSiblingElement("visual"))
+    for (MaybeElement child = linkDom >> firstChildElement("visual");
+         child; child = child >> nextSiblingElement("visual"))
     {
       Visual v;
-      tinyxml2::XMLElement *geometryDom = child->FirstChildElement("geometry");
+      MaybeElement geometryDom = child >> firstChildElement("geometry");
       if (geometryDom)
       {
-        tinyxml2::XMLElement *meshDom = geometryDom->FirstChildElement("mesh");
+        MaybeElement meshDom = geometryDom >> firstChildElement("mesh");
         if (meshDom)
         {
           v.origin = originFromTag(child);
           v.geometry.type = Geometry::Type::MESH;
           auto& mesh = boost::get<Geometry::Mesh>(v.geometry.data);
-          mesh.filename = meshDom->Attribute("filename");
-          // Optional scale
-          double scale = 1.;
-          meshDom->QueryDoubleAttribute( "scale", &scale );
-          mesh.scale = scale;
+          mesh.filename = (meshDom >> attribute("filename")).fromRight();
+          // Optional scale, defaults to 1.
+          mesh.scale = meshDom >> doubleAttribute("scale", 1.);
         }
         else
         {
           std::cerr << "Warning: only mesh geometry is supported, visual element has been ignored" << std::endl;
         }
-        const char* name = child->Attribute("name");
-        if(name) v.name = name;
+        MaybeString name = child >> attribute("name");
+        if(name) v.name = name.fromRight();
         res.visual[linkName].push_back(v);
       }
     }
@@ -267,31 +266,31 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     res.mbg.addBody(b);
   }
 
-  std::vector<tinyxml2::XMLElement *> joints;
+  std::vector<MaybeElement> joints;
   // Extract joint elements from the document, remove joints that link with filtered links
   {
-    tinyxml2::XMLElement * joint = robot->FirstChildElement("joint");
+    MaybeElement joint = MaybeElement::right(robot) >> firstChildElement("joint");
     while(joint)
     {
-      std::string parent_link = joint->FirstChildElement("parent")->Attribute("link");
-      std::string child_link = joint->FirstChildElement("child")->Attribute("link");
+      std::string parent_link = joint >> firstChildElement("parent") >> attribute("link");
+      std::string child_link = joint >> firstChildElement("child") >> attribute("link");
       if(std::find(filteredLinks.begin(), filteredLinks.end(), child_link) == filteredLinks.end() &&
          std::find(filteredLinks.begin(), filteredLinks.end(), parent_link) == filteredLinks.end())
       {
         joints.push_back(joint);
       }
-      joint = joint->NextSiblingElement("joint");
+      joint = joint >> nextSiblingElement("joint");
     }
   }
 
-  for(tinyxml2::XMLElement * jointDom : joints)
+  for(MaybeElement& jointDom : joints)
   {
-    std::string jointName = jointDom->Attribute("name");
-    std::string jointType = jointDom->Attribute("type");
+    std::string jointName = jointDom >> attribute("name");
+    std::string jointType = jointDom >> attribute("type");
 
     // Static transformation
     sva::PTransformd staticTransform = sva::PTransformd::Identity();
-    tinyxml2::XMLElement * originDom = jointDom->FirstChildElement("origin");
+    MaybeElement originDom = jointDom >> firstChildElement("origin");
     if(originDom)
     {
       Eigen::Vector3d staticT = attrToVector(*originDom, "xyz", Eigen::Vector3d(0,0,0));
@@ -301,7 +300,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
 
     // Read the joint axis
     Eigen::Vector3d axis = Eigen::Vector3d::UnitZ();
-    tinyxml2::XMLElement * axisDom = jointDom->FirstChildElement("axis");
+    tinyxml2::XMLElement * axisDom = jointDom >> firstChildElement("axis");
     if(axisDom)
     {
       axis = attrToVector(*axisDom, "xyz").normalized();
@@ -309,23 +308,19 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     rbd::Joint::Type type = rbdynFromUrdfJoint(jointType, (jointName.length() >= sphericalSuffix.length()
                             && jointName.substr(jointName.length() - sphericalSuffix.length(), sphericalSuffix.length()) == sphericalSuffix));
 
-    tinyxml2::XMLElement * parentDom = jointDom->FirstChildElement("parent");
-    std::string jointParent = parentDom->Attribute("link");
+    std::string jointParent = jointDom >> firstChildElement("parent") >> attribute("link");
 
-    tinyxml2::XMLElement * childDom = jointDom->FirstChildElement("child");
-    std::string jointChild = childDom->Attribute("link");
+    std::string jointChild = jointDom >> firstChildElement("child") >> attribute("link");
 
     rbd::Joint j(type, axis, true, jointName);
 
     // Check if this is a mimic joint
-    tinyxml2::XMLElement * mimicDom = jointDom->FirstChildElement("mimic");
+    MaybeElement mimicDom = jointDom >> firstChildElement("mimic");
     if(mimicDom)
     {
-      std::string mimicJoint = mimicDom->Attribute("joint");
-      double multiplier = 1.0;
-      double offset = 0.0;
-      mimicDom->QueryDoubleAttribute("multiplier", &multiplier);
-      mimicDom->QueryDoubleAttribute("offset", &offset);
+      std::string mimicJoint = mimicDom >> attribute("joint");
+      double multiplier = mimicDom >> doubleAttribute("multiplier", 1.0);
+      double offset = mimicDom >> doubleAttribute("offset", 0.0);
       j.makeMimic(mimicJoint, multiplier, offset);
     }
 
@@ -339,7 +334,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     std::vector<double> effort(static_cast<size_t>(j.dof()), INFINITY);
     std::vector<double> velocity(static_cast<size_t>(j.dof()), INFINITY);
 
-    tinyxml2::XMLElement * limitDom = jointDom->FirstChildElement("limit");
+    MaybeElement limitDom = jointDom >> firstChildElement("limit");
     if(limitDom && j.type() != rbd::Joint::Fixed)
     {
       if(jointType != "continuous")
@@ -375,6 +370,11 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
   URDFParserResult res;
 
   std::string baseLink = parseMultiBodyGraphFromURDF(res, content, filteredLinksIn, transformInertia, baseLinkIn, withVirtualLinks, sphericalSuffix);
+
+  if(!res.mbg.nrNodes())
+  {
+    throw std::runtime_error("Unable to extract valid robot");
+  }
 
   res.mb = res.mbg.makeMultiBody(baseLink, fixed);
   res.mbc = rbd::MultiBodyConfig(res.mb);
