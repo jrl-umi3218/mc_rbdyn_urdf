@@ -100,7 +100,7 @@ MCRBDYNURDF_API Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom, c
 
 MCRBDYNURDF_API Eigen::Matrix3d RPY(const double & r, const double & p, const double & y);
 
-MCRBDYNURDF_API rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type);
+MCRBDYNURDF_API rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalSuffix = false);
 
 MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName);
 MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement * dom);

@@ -101,7 +101,7 @@ inline Eigen::Matrix3d readInertia(const tinyxml2::XMLElement & dom)
   return m;
 }
 
-rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalSuffix = false)
+rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalSuffix)
 {
   if(type == "revolute")
     return rbd::Joint::Rev;

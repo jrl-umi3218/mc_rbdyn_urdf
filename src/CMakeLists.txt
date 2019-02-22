@@ -24,6 +24,23 @@ set(HEADERS
 )
 
 add_library(mc_rbdyn_urdf SHARED ${SOURCES} ${HEADERS})
+
+if(ENABLE_SIMD)
+  if(MSVC)
+    target_compile_options(mc_rbdyn_urdf PUBLIC /arch:SSE2 /arch:AVX /arch:AVX2)
+  elseif(CMAKE_COMPILER_IS_GNUCXX)
+    execute_process(
+      COMMAND ${CMAKE_CXX_COMPILER} -dumpfullversion -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+    set(CXX_COMPILER_VERSION ${GCC_VERSION})
+    target_compile_options(mc_rbdyn_urdf PUBLIC -march=native)
+    if(GCC_VERSION VERSION_GREATER 7.0)
+      target_compile_options(mc_rbdyn_urdf PUBLIC -faligned-new)
+    endif()
+  elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    target_compile_options(mc_rbdyn_urdf PUBLIC -march=native -faligned-new)
+  endif()
+endif()
+
 pkg_config_use_dependency(mc_rbdyn_urdf RBDyn)
 pkg_config_use_dependency(mc_rbdyn_urdf tinyxml2)
 
