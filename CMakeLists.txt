@@ -39,6 +39,7 @@ else()
 endif()
 option(PYTHON_BINDING_USER_INSTALL "Install the Python bindings in user space" ${PYTHON_BINDING_USER_INSTALL_DEFAULT})
 option(DISABLE_TESTS "Disable unit tests." OFF)
+option(ENABLE_SIMD "Build with all SIMD instructions on the current local machine" OFF)
 
 if(NOT WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++0x -pedantic")
