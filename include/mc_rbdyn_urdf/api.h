@@ -5,15 +5,15 @@
 #pragma once
 
 #ifdef WIN32
-    #define MCRBDYNURDF_DLLIMPORT __declspec(dllimport)
-    #define MCRBDYNURDF_DLLEXPORT __declspec(dllexport)
+#  define MCRBDYNURDF_DLLIMPORT __declspec(dllimport)
+#  define MCRBDYNURDF_DLLEXPORT __declspec(dllexport)
 #else
-    #define MCRBDYNURDF_DLLIMPORT
-    #define MCRBDYNURDF_DLLEXPORT
+#  define MCRBDYNURDF_DLLIMPORT
+#  define MCRBDYNURDF_DLLEXPORT
 #endif
 
 #ifdef MCRBDYNURDF_BUILDING
-    #define MCRBDYNURDF_API MCRBDYNURDF_DLLEXPORT
+#  define MCRBDYNURDF_API MCRBDYNURDF_DLLEXPORT
 #else
-    #define MCRBDYNURDF_API MCRBDYNURDF_DLLIMPORT
+#  define MCRBDYNURDF_API MCRBDYNURDF_DLLIMPORT
 #endif

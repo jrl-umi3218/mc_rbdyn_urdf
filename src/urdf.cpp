@@ -7,17 +7,18 @@
 #include <RBDyn/FK.h>
 #include <RBDyn/FV.h>
 
-#include <tinyxml2.h>
-
 #include <algorithm>
-#include <iostream>
-#include <cmath>
 #include <ciso646>
+#include <cmath>
+#include <iostream>
+#include <tinyxml2.h>
 
 namespace mc_rbdyn_urdf
 {
 
-std::vector<double> attrToList(const tinyxml2::XMLElement & dom, const std::string & attr, const std::vector<double> & def = {})
+std::vector<double> attrToList(const tinyxml2::XMLElement & dom,
+                               const std::string & attr,
+                               const std::vector<double> & def = {})
 {
   std::vector<double> res;
   const char * attrTxt = dom.Attribute(attr.c_str());
@@ -42,7 +43,9 @@ std::vector<double> attrToList(const tinyxml2::XMLElement & dom, const std::stri
   return res;
 }
 
-Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom, const std::string & attr, const Eigen::Vector3d & def = Eigen::Vector3d::Zero())
+Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom,
+                             const std::string & attr,
+                             const Eigen::Vector3d & def = Eigen::Vector3d::Zero())
 {
   Eigen::Vector3d res = def;
   std::vector<double> vec = attrToList(dom, attr, {res(0), res(1), res(2)});
@@ -64,9 +67,8 @@ Eigen::Matrix3d RPY(const double & r, const double & p, const double & y)
   double cc1 = cos(r);
   double sc1 = sin(r);
   Eigen::Matrix3d m;
-  m << ca1*cb1, ca1*sb1*sc1 - sa1*cc1, ca1*sb1*cc1 + sa1*sc1,
-       sa1*cb1,  sa1*sb1*sc1 + ca1*cc1, sa1*sb1*cc1 - ca1*sc1,
-       -sb1,  cb1*sc1, cb1*cc1;
+  m << ca1 * cb1, ca1 * sb1 * sc1 - sa1 * cc1, ca1 * sb1 * cc1 + sa1 * sc1, sa1 * cb1, sa1 * sb1 * sc1 + ca1 * cc1,
+      sa1 * sb1 * cc1 - ca1 * sc1, -sb1, cb1 * sc1, cb1 * cc1;
   return m.transpose();
 }
 
@@ -83,9 +85,9 @@ Eigen::Matrix3d RPY(const std::vector<double> rpy)
 inline Eigen::Matrix3d readInertia(const tinyxml2::XMLElement & dom)
 {
   Eigen::Matrix3d m;
-  m << dom.DoubleAttribute("ixx"), dom.DoubleAttribute("ixy"), dom.DoubleAttribute("ixz"),
-       dom.DoubleAttribute("ixy"), dom.DoubleAttribute("iyy"), dom.DoubleAttribute("iyz"),
-       dom.DoubleAttribute("ixz"), dom.DoubleAttribute("iyz"), dom.DoubleAttribute("izz");
+  m << dom.DoubleAttribute("ixx"), dom.DoubleAttribute("ixy"), dom.DoubleAttribute("ixz"), dom.DoubleAttribute("ixy"),
+      dom.DoubleAttribute("iyy"), dom.DoubleAttribute("iyz"), dom.DoubleAttribute("ixz"), dom.DoubleAttribute("iyz"),
+      dom.DoubleAttribute("izz");
   return m;
 }
 
@@ -99,7 +101,7 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalS
     return rbd::Joint::Rev;
   else if(type == "floating")
   {
-    if (hasSphericalSuffix)
+    if(hasSphericalSuffix)
       return rbd::Joint::Spherical;
     else
       return rbd::Joint::Free;
@@ -113,7 +115,7 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalS
   return rbd::Joint::Fixed;
 }
 
-sva::PTransformd originFromTag(const tinyxml2::XMLElement *dom)
+sva::PTransformd originFromTag(const tinyxml2::XMLElement * dom)
 {
   sva::PTransformd tf = sva::PTransformd::Identity();
 
@@ -122,7 +124,7 @@ sva::PTransformd originFromTag(const tinyxml2::XMLElement *dom)
     const tinyxml2::XMLElement * originDom = dom->FirstChildElement("origin");
     if(originDom)
     {
-      Eigen::Vector3d T = attrToVector(*originDom, "xyz", Eigen::Vector3d(0,0,0));
+      Eigen::Vector3d T = attrToVector(*originDom, "xyz", Eigen::Vector3d(0, 0, 0));
       Eigen::Matrix3d R = RPY(attrToList(*originDom, "rpy", {0.0, 0.0, 0.0}));
       tf = sva::PTransformd(R, T);
     }
@@ -136,7 +138,13 @@ sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::str
   return originFromTag(root.FirstChildElement(tagName.c_str()));
 }
 
-std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string & content, const std::vector<std::string> & filteredLinksIn, bool transformInertia, const std::string & baseLinkIn, bool withVirtualLinks, const std::string sphericalSuffix)
+std::string parseMultiBodyGraphFromURDF(URDFParserResult & res,
+                                        const std::string & content,
+                                        const std::vector<std::string> & filteredLinksIn,
+                                        bool transformInertia,
+                                        const std::string & baseLinkIn,
+                                        bool withVirtualLinks,
+                                        const std::string sphericalSuffix)
 {
   tinyxml2::XMLDocument doc;
   doc.Parse(content.c_str());
@@ -202,7 +210,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
 
       if(originDom)
       {
-        com = attrToVector(*originDom, "xyz", Eigen::Vector3d(0,0,0));
+        com = attrToVector(*originDom, "xyz", Eigen::Vector3d(0, 0, 0));
         comRPY = attrToList(*originDom, "rpy", {0.0, 0.0, 0.0});
       }
       Eigen::Matrix3d comFrame = RPY(comRPY);
@@ -219,30 +227,30 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     }
 
     // Parse all visual tags. There may be several per link
-    for (tinyxml2::XMLElement *child = linkDom->FirstChildElement("visual");
-         child != nullptr; child = child->NextSiblingElement("visual"))
+    for(tinyxml2::XMLElement * child = linkDom->FirstChildElement("visual"); child != nullptr;
+        child = child->NextSiblingElement("visual"))
     {
       Visual v;
-      tinyxml2::XMLElement *geometryDom = child->FirstChildElement("geometry");
-      if (geometryDom)
+      tinyxml2::XMLElement * geometryDom = child->FirstChildElement("geometry");
+      if(geometryDom)
       {
-        tinyxml2::XMLElement *meshDom = geometryDom->FirstChildElement("mesh");
-        if (meshDom)
+        tinyxml2::XMLElement * meshDom = geometryDom->FirstChildElement("mesh");
+        if(meshDom)
         {
           v.origin = originFromTag(child);
           v.geometry.type = Geometry::Type::MESH;
-          auto& mesh = boost::get<Geometry::Mesh>(v.geometry.data);
+          auto & mesh = boost::get<Geometry::Mesh>(v.geometry.data);
           mesh.filename = meshDom->Attribute("filename");
           // Optional scale
           double scale = 1.;
-          meshDom->QueryDoubleAttribute( "scale", &scale );
+          meshDom->QueryDoubleAttribute("scale", &scale);
           mesh.scale = scale;
         }
         else
         {
           std::cerr << "Warning: only mesh geometry is supported, visual element has been ignored" << std::endl;
         }
-        const char* name = child->Attribute("name");
+        const char * name = child->Attribute("name");
         if(name) v.name = name;
         res.visual[linkName].push_back(v);
       }
@@ -263,8 +271,8 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     {
       std::string parent_link = joint->FirstChildElement("parent")->Attribute("link");
       std::string child_link = joint->FirstChildElement("child")->Attribute("link");
-      if(std::find(filteredLinks.begin(), filteredLinks.end(), child_link) == filteredLinks.end() &&
-         std::find(filteredLinks.begin(), filteredLinks.end(), parent_link) == filteredLinks.end())
+      if(std::find(filteredLinks.begin(), filteredLinks.end(), child_link) == filteredLinks.end()
+         && std::find(filteredLinks.begin(), filteredLinks.end(), parent_link) == filteredLinks.end())
       {
         joints.push_back(joint);
       }
@@ -282,7 +290,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     tinyxml2::XMLElement * originDom = jointDom->FirstChildElement("origin");
     if(originDom)
     {
-      Eigen::Vector3d staticT = attrToVector(*originDom, "xyz", Eigen::Vector3d(0,0,0));
+      Eigen::Vector3d staticT = attrToVector(*originDom, "xyz", Eigen::Vector3d(0, 0, 0));
       Eigen::Matrix3d staticR = RPY(attrToList(*originDom, "rpy", {0.0, 0.0, 0.0}));
       staticTransform = sva::PTransformd(staticR, staticT);
     }
@@ -294,8 +302,10 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
     {
       axis = attrToVector(*axisDom, "xyz").normalized();
     }
-    rbd::Joint::Type type = rbdynFromUrdfJoint(jointType, (jointName.length() >= sphericalSuffix.length()
-                            && jointName.substr(jointName.length() - sphericalSuffix.length(), sphericalSuffix.length()) == sphericalSuffix));
+    rbd::Joint::Type type = rbdynFromUrdfJoint(
+        jointType, (jointName.length() >= sphericalSuffix.length()
+                    && jointName.substr(jointName.length() - sphericalSuffix.length(), sphericalSuffix.length())
+                           == sphericalSuffix));
 
     tinyxml2::XMLElement * parentDom = jointDom->FirstChildElement("parent");
     std::string jointParent = parentDom->Attribute("link");
@@ -338,11 +348,11 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
       effort = attrToList(*limitDom, "effort");
       velocity = attrToList(*limitDom, "velocity");
     }
-    auto check_limit = [&j](const std::string & name, const std::vector<double> & limit)
-    {
+    auto check_limit = [&j](const std::string & name, const std::vector<double> & limit) {
       if(limit.size() != static_cast<size_t>(j.dof()))
       {
-        std::cerr << "Joint " << name << " limit for " << j.name() << ": size missmatch, expected: " << j.dof() << ", got: " << limit.size() << std::endl;
+        std::cerr << "Joint " << name << " limit for " << j.name() << ": size missmatch, expected: " << j.dof()
+                  << ", got: " << limit.size() << std::endl;
       }
     };
     check_limit("lower", lower);
@@ -358,11 +368,18 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string
   return baseLink;
 }
 
-URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const std::vector<std::string> & filteredLinksIn, bool transformInertia, const std::string & baseLinkIn, bool withVirtualLinks, const std::string sphericalSuffix)
+URDFParserResult rbdyn_from_urdf(const std::string & content,
+                                 bool fixed,
+                                 const std::vector<std::string> & filteredLinksIn,
+                                 bool transformInertia,
+                                 const std::string & baseLinkIn,
+                                 bool withVirtualLinks,
+                                 const std::string sphericalSuffix)
 {
   URDFParserResult res;
 
-  std::string baseLink = parseMultiBodyGraphFromURDF(res, content, filteredLinksIn, transformInertia, baseLinkIn, withVirtualLinks, sphericalSuffix);
+  std::string baseLink = parseMultiBodyGraphFromURDF(res, content, filteredLinksIn, transformInertia, baseLinkIn,
+                                                     withVirtualLinks, sphericalSuffix);
 
   res.mb = res.mbg.makeMultiBody(baseLink, fixed);
   res.mbc = rbd::MultiBodyConfig(res.mb);
@@ -374,4 +391,4 @@ URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed, const 
   return res;
 }
 
-}
+} // namespace mc_rbdyn_urdf
