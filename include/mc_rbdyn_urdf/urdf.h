@@ -4,16 +4,19 @@
 
 #pragma once
 
-#include <SpaceVecAlg/SpaceVecAlg>
+#include <mc_rbdyn_urdf/api.h>
+
 #include <RBDyn/Joint.h>
 #include <RBDyn/MultiBody.h>
 #include <RBDyn/MultiBodyConfig.h>
 #include <RBDyn/MultiBodyGraph.h>
+
+#include <SpaceVecAlg/SpaceVecAlg>
+
+#include <boost/variant.hpp>
+
 #include <Eigen/Core>
 #include <string>
-
-#include <mc_rbdyn_urdf/api.h>
-#include <boost/variant.hpp>
 
 namespace mc_rbdyn_urdf
 {
@@ -21,15 +24,15 @@ namespace mc_rbdyn_urdf
 struct MCRBDYNURDF_API Limits
 {
 public:
-  std::map< std::string, std::vector<double> > lower;
-  std::map< std::string, std::vector<double> > upper;
-  std::map< std::string, std::vector<double> > velocity;
-  std::map< std::string, std::vector<double> > torque;
+  std::map<std::string, std::vector<double>> lower;
+  std::map<std::string, std::vector<double>> upper;
+  std::map<std::string, std::vector<double>> velocity;
+  std::map<std::string, std::vector<double>> torque;
 };
 
 struct MCRBDYNURDF_API Geometry
 {
- public:
+public:
   struct Mesh
   {
     Mesh() : scale(1) {}
@@ -38,7 +41,7 @@ struct MCRBDYNURDF_API Geometry
   };
   struct Box
   {
-    Box() : size(0.)  {}
+    Box() : size(0.) {}
     double size;
   };
   struct Cylinder
@@ -53,7 +56,14 @@ struct MCRBDYNURDF_API Geometry
     double radius;
   };
 
-  enum Type { BOX, CYLINDER, SPHERE, MESH, UNKNOWN };
+  enum Type
+  {
+    BOX,
+    CYLINDER,
+    SPHERE,
+    MESH,
+    UNKNOWN
+  };
   Type type;
   boost::variant<Mesh, Box, Cylinder, Sphere> data;
 
@@ -66,7 +76,6 @@ struct MCRBDYNURDF_API Visual
   sva::PTransformd origin;
   Geometry geometry;
 };
-
 
 struct MCRBDYNURDF_API URDFParserResult
 {
@@ -83,8 +92,20 @@ MCRBDYNURDF_API Eigen::Matrix3d RPY(const double & r, const double & p, const do
 
 MCRBDYNURDF_API rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type);
 
-MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content, bool fixed = true, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true, const std::string sphericalSuffix = "_spherical");
+MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content,
+                                                 bool fixed = true,
+                                                 const std::vector<std::string> & filteredLinksIn = {},
+                                                 bool transformInertia = true,
+                                                 const std::string & baseLinkIn = "",
+                                                 bool withVirtualLinks = true,
+                                                 const std::string sphericalSuffix = "_spherical");
 
-MCRBDYNURDF_API std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string & content, const std::vector<std::string> & filteredLinksIn = {}, bool transformInertia = true, const std::string & baseLinkIn = "", bool withVirtualLinks = true, const std::string sphericalSuffix = "_spherical");
+MCRBDYNURDF_API std::string parseMultiBodyGraphFromURDF(URDFParserResult & res,
+                                                        const std::string & content,
+                                                        const std::vector<std::string> & filteredLinksIn = {},
+                                                        bool transformInertia = true,
+                                                        const std::string & baseLinkIn = "",
+                                                        bool withVirtualLinks = true,
+                                                        const std::string sphericalSuffix = "_spherical");
 
-}
+} // namespace mc_rbdyn_urdf
