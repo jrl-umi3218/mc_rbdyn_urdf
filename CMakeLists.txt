@@ -2,21 +2,20 @@
 # Copyright 2012-2019 CNRS-UM LIRMM, CNRS-AIST JRL
 #
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1.3)
 
 include(cmake/base.cmake)
-include(cmake/boost.cmake)
-include(cmake/eigen.cmake)
 include(cmake/msvc-specific.cmake)
 
 set(PROJECT_NAME mc_rbdyn_urdf)
-set(PROJECT_DESCRIPTION "...")
+set(PROJECT_DESCRIPTION "URDF parsing for the RBDyn library")
 set(PROJECT_URL "https://github.com/jrl-umi3218/mc_rbdyn_urdf")
 set(PROJECT_DEBUG_POSTFIX "_d")
 
 set(DOXYGEN_USE_MATHJAX "YES")
 set(CXX_DISABLE_WERROR True)
 setup_project()
+set(PROJECT_VERSION 1.1.0)
 
 option(PYTHON_BINDING "Generate python binding." ON)
 if(WIN32)
@@ -27,15 +26,10 @@ endif()
 option(PYTHON_BINDING_USER_INSTALL "Install the Python bindings in user space" ${PYTHON_BINDING_USER_INSTALL_DEFAULT})
 option(DISABLE_TESTS "Disable unit tests." OFF)
 
-if(NOT WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++0x -pedantic")
-endif()
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
 
-search_for_eigen()
-
-add_required_dependency("SpaceVecAlg")
-add_required_dependency("RBDyn" "RBDyn_d")
-add_required_dependency("tinyxml2")
+add_project_dependency(RBDyn REQUIRED)
+find_package(TinyXML2 REQUIRED)
 
 # For MSVC, set local environment variable to enable finding the built dll
 # of the main library when launching ctest with RUN_TESTS
@@ -53,7 +47,5 @@ if(${PYTHON_BINDING})
  add_subdirectory(binding/python)
 endif()
 
-pkg_config_append_libs(mc_rbdyn_urdf)
 setup_project_finalize()
 setup_project_package_finalize()
-

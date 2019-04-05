@@ -7,6 +7,8 @@
 #include <RBDyn/FK.h>
 #include <RBDyn/FV.h>
 
+#include <tinyxml2.h>
+
 #include <algorithm>
 #include <iostream>
 #include <cmath>
@@ -15,7 +17,7 @@
 namespace mc_rbdyn_urdf
 {
 
-std::vector<double> attrToList(const tinyxml2::XMLElement & dom, const std::string & attr, const std::vector<double> & def)
+std::vector<double> attrToList(const tinyxml2::XMLElement & dom, const std::string & attr, const std::vector<double> & def = {})
 {
   std::vector<double> res;
   const char * attrTxt = dom.Attribute(attr.c_str());
@@ -40,7 +42,7 @@ std::vector<double> attrToList(const tinyxml2::XMLElement & dom, const std::stri
   return res;
 }
 
-Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom, const std::string & attr, const Eigen::Vector3d & def)
+Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom, const std::string & attr, const Eigen::Vector3d & def = Eigen::Vector3d::Zero())
 {
   Eigen::Vector3d res = def;
   std::vector<double> vec = attrToList(dom, attr, {res(0), res(1), res(2)});
@@ -111,11 +113,6 @@ rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type, bool hasSphericalS
   return rbd::Joint::Fixed;
 }
 
-sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName)
-{
-  return originFromTag(root.FirstChildElement(tagName.c_str()));
-}
-
 sva::PTransformd originFromTag(const tinyxml2::XMLElement *dom)
 {
   sva::PTransformd tf = sva::PTransformd::Identity();
@@ -132,6 +129,11 @@ sva::PTransformd originFromTag(const tinyxml2::XMLElement *dom)
   }
 
   return tf;
+}
+
+sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName)
+{
+  return originFromTag(root.FirstChildElement(tagName.c_str()));
 }
 
 std::string parseMultiBodyGraphFromURDF(URDFParserResult& res, const std::string & content, const std::vector<std::string> & filteredLinksIn, bool transformInertia, const std::string & baseLinkIn, bool withVirtualLinks, const std::string sphericalSuffix)

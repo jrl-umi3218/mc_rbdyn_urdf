@@ -11,7 +11,7 @@ else()
   endforeach()
 endif()
 configure_file(setup.in.py "${CMAKE_CURRENT_BINARY_DIR}/setup.in.py")
-FILE(GENERATE
+file(GENERATE
       OUTPUT "${SETUP_LOCATION}/setup.py"
       INPUT  "${CMAKE_CURRENT_BINARY_DIR}/setup.in.py")
 
@@ -23,13 +23,17 @@ add_custom_target(mc_rbdyn_urdf-python-bindings ALL
   DEPENDS include/mc_rbdyn_urdf_wrapper.hpp mc_rbdyn_urdf/c_mc_rbdyn_urdf.pxd mc_rbdyn_urdf/mc_rbdyn_urdf.pxd mc_rbdyn_urdf/mc_rbdyn_urdf.pyx
   SOURCES include/mc_rbdyn_urdf_wrapper.hpp mc_rbdyn_urdf/c_mc_rbdyn_urdf.pxd mc_rbdyn_urdf/mc_rbdyn_urdf.pxd mc_rbdyn_urdf/mc_rbdyn_urdf.pyx
 )
+add_dependencies(mc_rbdyn_urdf-python-bindings mc_rbdyn_urdf)
 
 if(NOT ${DISABLE_TESTS})
-  if(NOT DEFINED PYTHON_DEB_ROOT)
-    add_test(NAME PythonBindingsTest
-      COMMAND ${CMAKE_COMMAND} -E chdir "$<TARGET_FILE_DIR:mc_rbdyn_urdf>" nosetests ${SETUP_LOCATION}
-    )
+  if(WIN32)
+    set(PATH_SEP ";")
+  else()
+    set(PATH_SEP ":")
   endif()
+  add_test(NAME PythonBindingsTest
+    COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=$<TARGET_FILE_DIR:mc_rbdyn_urdf>${PATH_SEP}$ENV{LD_LIBRARY_PATH} nosetests -s ${SETUP_LOCATION}
+  )
 endif()
 
 set(PIP_EXTRA_OPTIONS "")

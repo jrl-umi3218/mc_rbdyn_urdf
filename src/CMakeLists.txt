@@ -11,19 +11,16 @@ set(HEADERS
 )
 
 add_library(mc_rbdyn_urdf SHARED ${SOURCES} ${HEADERS})
-pkg_config_use_dependency(mc_rbdyn_urdf RBDyn)
-pkg_config_use_dependency(mc_rbdyn_urdf tinyxml2)
-
+target_include_directories(mc_rbdyn_urdf PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> $<INSTALL_INTERFACE:include>)
+target_link_libraries(mc_rbdyn_urdf PUBLIC RBDyn::RBDyn PRIVATE TinyXML2::TinyXML2)
 set_target_properties(mc_rbdyn_urdf PROPERTIES SOVERSION 1 VERSION 1.1.0)
 target_compile_definitions(mc_rbdyn_urdf PRIVATE "-DMCRBDYNURDF_BUILDING")
 
-set(INSTALL_PATH include/mc_rbdyn_urdf)
-install(FILES ${HEADERS} DESTINATION ${INSTALL_PATH})
+install(FILES ${HEADERS} DESTINATION include/mc_rbdyn_urdf)
 install(
   TARGETS mc_rbdyn_urdf
   EXPORT "${TARGETS_EXPORT_NAME}"
   LIBRARY DESTINATION "lib"
   ARCHIVE DESTINATION "lib"
   RUNTIME DESTINATION "bin"
-  INCLUDES DESTINATION "${INCLUDE_INSTALL_DIR}"
 )
