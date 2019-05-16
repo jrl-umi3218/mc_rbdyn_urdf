@@ -299,13 +299,13 @@ cdef class URDFParserResult(object):
     pass
   property mb:
     def __get__(self):
-      return rbdyn.MultiBodyFromC(self.impl.mb)
+      return rbdyn.MultiBodyFromC(self.impl.mb, copy = False)
   property mbc:
     def __get__(self):
-      return rbdyn.MultiBodyConfigFromC(self.impl.mbc)
+      return rbdyn.MultiBodyConfigFromC(self.impl.mbc, copy = False)
   property mbg:
     def __get__(self):
-      return rbdyn.MultiBodyGraphFromC(self.impl.mbg)
+      return rbdyn.MultiBodyGraphFromC(self.impl.mbg, copy = False)
   property limits:
     def __get__(self):
       return LimitsFromC(self.impl.limits)
