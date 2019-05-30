@@ -4,6 +4,8 @@
 
 cmake_minimum_required(VERSION 3.1.3)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 include(cmake/base.cmake)
 include(cmake/msvc-specific.cmake)
 
