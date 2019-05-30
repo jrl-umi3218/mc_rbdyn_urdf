@@ -27,6 +27,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
 add_project_dependency(RBDyn REQUIRED)
 find_package(TinyXML2 REQUIRED)
 
+# Note: technically we don't need system but it is likely to be here and
+# CMake <= 3.5.0 needs at least one component to define Boost::boost
+add_project_dependency(Boost REQUIRED COMPONENTS system)
+
 # For MSVC, set local environment variable to enable finding the built dll
 # of the main library when launching ctest with RUN_TESTS
 if(MSVC)
