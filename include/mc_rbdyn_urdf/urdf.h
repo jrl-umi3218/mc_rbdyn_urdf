@@ -17,6 +17,7 @@
 
 #include <Eigen/Core>
 #include <string>
+#include <tinyxml2.h>
 
 namespace mc_rbdyn_urdf
 {
@@ -88,9 +89,21 @@ public:
   std::map<std::string, sva::PTransformd> collision_tf;
 };
 
+MCRBDYNURDF_API std::vector<double> attrToList(const tinyxml2::XMLElement & dom,
+                                               const std::string & attr,
+                                               const std::vector<double> & def = {});
+
+MCRBDYNURDF_API Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom,
+                                             const std::string & attr,
+                                             const Eigen::Vector3d & def = Eigen::Vector3d(0, 0, 0));
+
 MCRBDYNURDF_API Eigen::Matrix3d RPY(const double & r, const double & p, const double & y);
 
 MCRBDYNURDF_API rbd::Joint::Type rbdynFromUrdfJoint(const std::string & type);
+
+MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName);
+
+MCRBDYNURDF_API sva::PTransformd originFromTag(const tinyxml2::XMLElement & root, const std::string & tagName);
 
 MCRBDYNURDF_API URDFParserResult rbdyn_from_urdf(const std::string & content,
                                                  bool fixed = true,
