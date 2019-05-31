@@ -12,7 +12,7 @@ set(HEADERS
 
 add_library(mc_rbdyn_urdf SHARED ${SOURCES} ${HEADERS})
 target_include_directories(mc_rbdyn_urdf PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> $<INSTALL_INTERFACE:include>)
-target_link_libraries(mc_rbdyn_urdf PUBLIC RBDyn::RBDyn Boost::boost PRIVATE TinyXML2::TinyXML2)
+target_link_libraries(mc_rbdyn_urdf PUBLIC RBDyn::RBDyn Boost::boost tinyxml2::tinyxml2)
 set_target_properties(mc_rbdyn_urdf PROPERTIES SOVERSION 1 VERSION 1.1.0)
 set_target_properties(mc_rbdyn_urdf PROPERTIES CXX_STANDARD 11)
 target_compile_definitions(mc_rbdyn_urdf PRIVATE "-DMCRBDYNURDF_BUILDING")
