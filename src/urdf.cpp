@@ -18,7 +18,7 @@ namespace mc_rbdyn_urdf
 
 std::vector<double> attrToList(const tinyxml2::XMLElement & dom,
                                const std::string & attr,
-                               const std::vector<double> & def = {})
+                               const std::vector<double> & def)
 {
   std::vector<double> res;
   const char * attrTxt = dom.Attribute(attr.c_str());
@@ -43,9 +43,7 @@ std::vector<double> attrToList(const tinyxml2::XMLElement & dom,
   return res;
 }
 
-Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom,
-                             const std::string & attr,
-                             const Eigen::Vector3d & def = Eigen::Vector3d::Zero())
+Eigen::Vector3d attrToVector(const tinyxml2::XMLElement & dom, const std::string & attr, const Eigen::Vector3d & def)
 {
   Eigen::Vector3d res = def;
   std::vector<double> vec = attrToList(dom, attr, {res(0), res(1), res(2)});
