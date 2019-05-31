@@ -27,9 +27,9 @@ set(TinyXML2_INCLUDE_DIRS ${TinyXML2_INCLUDE_DIR})
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(TinyXML2 DEFAULT_MSG TinyXML2_LIBRARY TinyXML2_INCLUDE_DIR)
 mark_as_advanced(TinyXML2_INCLUDE_DIR TinyXML2_LIBRARY)
-if(TinyXML2_FOUND AND NOT TARGET TinyXML2::TinyXML2)
-  add_library(TinyXML2::TinyXML2 STATIC IMPORTED)
-  set_target_properties(TinyXML2::TinyXML2 PROPERTIES
+if(TinyXML2_FOUND AND NOT TARGET tinyxml2::tinyxml2)
+  add_library(tinyxml2::tinyxml2 UNKNOWN IMPORTED)
+  set_target_properties(tinyxml2::tinyxml2 PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${TinyXML2_INCLUDE_DIRS}
     IMPORTED_LOCATION ${TinyXML2_LIBRARY}
     )

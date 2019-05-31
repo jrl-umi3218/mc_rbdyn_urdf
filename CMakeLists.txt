@@ -25,7 +25,15 @@ option(DISABLE_TESTS "Disable unit tests." OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
 
 add_project_dependency(RBDyn REQUIRED)
-find_package(TinyXML2 REQUIRED)
+find_package(tinyxml2 QUIET)
+if(NOT ${tinyxml2_FOUND})
+  find_package(mc_rbdyn_urdf_TinyXML2 REQUIRED)
+  install(FILES "${PROJECT_SOURCE_DIR}/CMakeModules/Findmc_rbdyn_urdf_TinyXML2.cmake"
+          DESTINATION "${CONFIG_INSTALL_DIR}")
+   set(PACKAGE_EXTRA_MACROS "include(\${CMAKE_CURRENT_LIST_DIR}/Findmc_rbdyn_urdf_TinyXML2.cmake)")
+else()
+  add_project_dependency(tinyxml2 REQUIRED)
+endif()
 
 # Note: technically we don't need system but it is likely to be here and
 # CMake <= 3.5.0 needs at least one component to define Boost::boost
