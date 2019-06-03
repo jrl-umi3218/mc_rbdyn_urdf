@@ -15,7 +15,7 @@ target_include_directories(mc_rbdyn_urdf PUBLIC $<BUILD_INTERFACE:${CMAKE_CURREN
 target_link_libraries(mc_rbdyn_urdf PUBLIC RBDyn::RBDyn Boost::boost tinyxml2::tinyxml2)
 set_target_properties(mc_rbdyn_urdf PROPERTIES SOVERSION 1 VERSION 1.1.0)
 set_target_properties(mc_rbdyn_urdf PROPERTIES CXX_STANDARD 11)
-target_compile_definitions(mc_rbdyn_urdf PRIVATE "-DMCRBDYNURDF_BUILDING")
+set_target_properties(mc_rbdyn_urdf PROPERTIES COMPILE_FLAGS "-DMCRBDYNURDF_BUILDING")
 
 install(FILES ${HEADERS} DESTINATION include/mc_rbdyn_urdf)
 install(
