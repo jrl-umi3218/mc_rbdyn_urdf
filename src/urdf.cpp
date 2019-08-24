@@ -11,6 +11,7 @@
 #include <ciso646>
 #include <cmath>
 #include <iostream>
+#include <locale>
 #include <tinyxml2.h>
 
 namespace mc_rbdyn_urdf
@@ -25,6 +26,12 @@ std::vector<double> attrToList(const tinyxml2::XMLElement & dom,
   if(attrTxt)
   {
     std::stringstream ss;
+    // Every real number in a URDF file needs to be parsed assuming that the
+    // decimal point separator is the period, as specified in XML Schema
+    // definition of xs:double. The call to imbue ensures that a suitable
+    // locale is used, instead of using the current C++ global locale.
+    // Related PR: https://github.com/ros/urdfdom_headers/pull/42 .
+    ss.imbue(std::locale::classic());
     ss << attrTxt;
     double tmp;
     while(ss.good())
