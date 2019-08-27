@@ -17,6 +17,31 @@
 namespace mc_rbdyn_urdf
 {
 
+double attrToDouble(const tinyxml2::XMLElement & dom,
+                    const std::string & attr,
+                    double def = 0.0)
+{
+  const char * attrTxt = dom.Attribute(attr.c_str());
+  if(attrTxt)
+  {
+    std::stringstream ss;
+    // Every real number in a URDF file needs to be parsed assuming that the
+    // decimal point separator is the period, as specified in XML Schema
+    // definition of xs:double. The call to imbue ensures that a suitable
+    // locale is used, instead of using the current C++ global locale.
+    // Related PR: https://github.com/ros/urdfdom_headers/pull/42 .
+    ss.imbue(std::locale::classic());
+    ss << attrTxt;
+    double res;
+    ss >> res;
+    if(!ss.fail())
+    {
+      return res;
+    }
+  }
+  return def;
+}
+
 std::vector<double> attrToList(const tinyxml2::XMLElement & dom,
                                const std::string & attr,
                                const std::vector<double> & def)
@@ -90,9 +115,9 @@ Eigen::Matrix3d RPY(const std::vector<double> rpy)
 inline Eigen::Matrix3d readInertia(const tinyxml2::XMLElement & dom)
 {
   Eigen::Matrix3d m;
-  m << dom.DoubleAttribute("ixx"), dom.DoubleAttribute("ixy"), dom.DoubleAttribute("ixz"), dom.DoubleAttribute("ixy"),
-      dom.DoubleAttribute("iyy"), dom.DoubleAttribute("iyz"), dom.DoubleAttribute("ixz"), dom.DoubleAttribute("iyz"),
-      dom.DoubleAttribute("izz");
+  m << attrToDouble(dom, "ixx"), attrToDouble(dom, "ixy"), attrToDouble(dom, "ixz"), attrToDouble(dom, "ixy"),
+      attrToDouble(dom, "iyy"), attrToDouble(dom, "iyz"), attrToDouble(dom, "ixz"), attrToDouble(dom, "iyz"),
+      attrToDouble(dom, "izz");
   return m;
 }
 
@@ -219,7 +244,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult & res,
         comRPY = attrToList(*originDom, "rpy", {0.0, 0.0, 0.0});
       }
       Eigen::Matrix3d comFrame = RPY(comRPY);
-      mass = massDom->DoubleAttribute("value");
+      mass = attrToDouble(*massDom, "value");
       Eigen::Matrix3d inertia = readInertia(*inertiaDom);
       if(transformInertia)
       {
@@ -247,9 +272,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult & res,
           auto & mesh = boost::get<Geometry::Mesh>(v.geometry.data);
           mesh.filename = meshDom->Attribute("filename");
           // Optional scale
-          double scale = 1.;
-          meshDom->QueryDoubleAttribute("scale", &scale);
-          mesh.scale = scale;
+          mesh.scale = attrToDouble(*meshDom, "scale", 1.0);
         }
         else
         {
@@ -325,11 +348,7 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult & res,
     if(mimicDom)
     {
       std::string mimicJoint = mimicDom->Attribute("joint");
-      double multiplier = 1.0;
-      double offset = 0.0;
-      mimicDom->QueryDoubleAttribute("multiplier", &multiplier);
-      mimicDom->QueryDoubleAttribute("offset", &offset);
-      j.makeMimic(mimicJoint, multiplier, offset);
+      j.makeMimic(mimicJoint, attrToDouble(*mimicDom, "multiplier", 1.0), attrToDouble(*mimicDom, "offset"));
     }
 
     res.mbg.addJoint(j);
