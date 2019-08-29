@@ -35,45 +35,61 @@ cdef class Limits(object):
       return self.impl.lower
     def __set__(self, value):
       assert(__EXPERT_MODE__)
-      for k, v in value.items():
-        if isinstance(k, unicode):
-          value.pop(k)
-          k = k.encode(u'ascii')
-          value[k] = v
-      self.impl.lower = value
+      if any(map(lambda k: isinstance(k, unicode), value)):
+        nvalue = {}
+        for k, v in value.items():
+          if isinstance(k, unicode):
+            nvalue[k.encode(u'ascii')] = v
+          else:
+            nvalue[k] = v
+        self.impl.lower = nvalue
+      else:
+        self.impl.lower = value
   property upper:
     def __get__(self):
       return self.impl.upper
     def __set__(self, value):
       assert(__EXPERT_MODE__)
-      for k, v in value.items():
-        if isinstance(k, unicode):
-          value.pop(k)
-          k = k.encode(u'ascii')
-          value[k] = v
-      self.impl.upper = value
+      if any(map(lambda k: isinstance(k, unicode), value)):
+        nvalue = {}
+        for k, v in value.items():
+          if isinstance(k, unicode):
+            nvalue[k.encode(u'ascii')] = v
+          else:
+            nvalue[k] = v
+        self.impl.upper = nvalue
+      else:
+        self.impl.upper = value
   property velocity:
     def __get__(self):
       return self.impl.velocity
     def __set__(self, value):
       assert(__EXPERT_MODE__)
-      for k, v in value.items():
-        if isinstance(k, unicode):
-          value.pop(k)
-          k = k.encode(u'ascii')
-          value[k] = v
-      self.impl.velocity = value
+      if any(map(lambda k: isinstance(k, unicode), value)):
+        nvalue = {}
+        for k, v in value.items():
+          if isinstance(k, unicode):
+            nvalue[k.encode(u'ascii')] = v
+          else:
+            nvalue[k] = v
+        self.impl.velocity = nvalue
+      else:
+        self.impl.velocity = value
   property torque:
     def __get__(self):
       return self.impl.torque
     def __set__(self, value):
       assert(__EXPERT_MODE__)
-      for k, v in value.items():
-        if isinstance(k, unicode):
-          value.pop(k)
-          k = k.encode(u'ascii')
-          value[k] = v
-      self.impl.torque = value
+      if any(map(lambda k: isinstance(k, unicode), value)):
+        nvalue = {}
+        for k, v in value.items():
+          if isinstance(k, unicode):
+            nvalue[k.encode(u'ascii')] = v
+          else:
+            nvalue[k] = v
+        self.impl.torque = nvalue
+      else:
+        self.impl.torque = value
 
 cdef Limits LimitsFromC(const c_mc_rbdyn_urdf.Limits & lim):
     cdef Limits ret = Limits()
