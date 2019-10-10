@@ -35,8 +35,8 @@ sudo apt-get install librbdyn-dev librbdyn-doc python-rbdyn python3-rbdyn
 ### Building
 
 ```sh
-git clone --recursive https://github.com/jrl-umi3218/RBDyn
-cd RBDyn
+git clone --recursive https://github.com/jrl-umi3218/mc_rbydn_urdf
+cd mc_rbydn_urdf
 mkdir _build
 cd _build
 cmake [options] ..
@@ -51,4 +51,4 @@ By default, the build will use the `python` and `pip` command to install the bin
  * `PYTHON_BINDING_FORCE_PYTHON2`: use `python2` and `pip2` instead of `python` and `pip`
  * `PYTHON_BINDING_FORCE_PYTHON3`: use `python3` and `pip3` instead of `python` and `pip`
  * `PYTHON_BINDING_BUILD_PYTHON2_AND_PYTHON2`: builds two sets of bindings one with `python2` and `pip2`, the other with `python3` and `pip3`
- * `DISABLE_TESTS` Disable unit tests building (ON/OFF, default: OFF)
+ * `BUILD_TESTING` Enable unit tests building (ON/OFF, default: ON)
