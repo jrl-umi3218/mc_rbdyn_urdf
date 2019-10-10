@@ -4,23 +4,24 @@
 
 cmake_minimum_required(VERSION 3.1.3)
 
+set(CMAKE_CXX_STANDARD 11)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-include(cmake/base.cmake)
-include(cmake/cython/cython.cmake)
-include(cmake/msvc-specific.cmake)
 
 set(PROJECT_NAME mc_rbdyn_urdf)
 set(PROJECT_DESCRIPTION "URDF parsing for the RBDyn library")
 set(PROJECT_URL "https://github.com/jrl-umi3218/mc_rbdyn_urdf")
 set(PROJECT_DEBUG_POSTFIX "_d")
+set(PROJECT_VERSION 1.1.0)
+set(PROJECT_USE_CMAKE_EXPORT TRUE)
+
+include(cmake/base.cmake)
+include(cmake/cython/cython.cmake)
+include(cmake/msvc-specific.cmake)
 
 set(DOXYGEN_USE_MATHJAX "YES")
 set(CXX_DISABLE_WERROR True)
-setup_project()
-set(PROJECT_VERSION 1.1.0)
 
-option(DISABLE_TESTS "Disable unit tests." OFF)
+project(mc_rbdyn_urdf CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
 
@@ -47,13 +48,10 @@ endif()
 
 add_subdirectory(src)
 
-if(NOT ${DISABLE_TESTS})
+if(${BUILD_TESTING})
   add_subdirectory(tests)
 endif()
 
 if(${PYTHON_BINDING})
  add_subdirectory(binding/python)
 endif()
-
-setup_project_finalize()
-setup_project_package_finalize()
