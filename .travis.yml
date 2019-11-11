@@ -34,6 +34,9 @@ env:
   - APT_DEPENDENCIES=""
   - GIT_DEPENDENCIES="jrl-umi3218/Eigen3ToPython jrl-umi3218/SpaceVecAlg jrl-umi3218/RBDyn"
   - CMAKE_ADDITIONAL_OPTIONS="-DPYTHON_BINDING_BUILD_PYTHON2_AND_PYTHON3:BOOL=ON -DPYTHON_BINDING_USER_INSTALL:BOOL=ON"
+  - GH_USERNAME=gergondet
+  - GH_REPO=jrl-umi3218/mc_rbdyn_urdf
+  - secure: TtPlQqME2ETu5eibNNEc6sYlmpdYRL//9ZAwUPG5HSGp3tNpTlDnlIX/7r9XloimkGf/y9VgXwcVumn+VDRX9OefV5ZpkQsmn1oOFARSmh+tzN1bibqS2tagtunJw/spQnlIrmYkP+jmvGLsY665Wv1gnt24xuYIGsK1TpIM65yYekmwoSL9JQ6UcYERICCse8f58pIKQSW0QrpZz+lpbmG/cPwB2duLmDhPPJKl26hiZzXDZskeZ0xXEFOJR2FhoatUEV5UIYR7H44sn5+VIJ9Axmc6yn8q+GvcmbF9G+hZOprPSiGsnUPssXbASrKme2ev8TsirAJGxpgYmyvJ88TrAGeUm4ulnYL5ic2yUrTmCvQDScjdRCX47qfq7io2BgKWktmaf/Ex1ZnXEvOZa9vDU2IzIa/BPSncljhznktC5g6LZ6lOwRnpjc8Ze/G+YJFNY8r8zmskwngbIwo/zzN6tkfOazPGkmX6b7t1DM2Oy78vSdqKYrSRybbh68bffWk3SkZ6Dd9CcPTFmVnvw4K/qL9A0nHZBKm4C3qPG59X3O3nQmzuBTEbUopqFGmtf1CTNbBInEyW3bqazUAD5edlzHOMPW4Zg7klUgoV+jcyCc5nyTubXwrMMvzVBNypjIol/khG/2vkSK46Ub8LE10CurfNczRF+9Gv5usogZQ=
   matrix:
   - CMAKE_BUILD_TYPE=RelWithDebInfo
   - CMAKE_BUILD_TYPE=Debug
@@ -44,5 +47,6 @@ script: ./.jrl-ci/run build
 after_success: ./.jrl-ci/run after_success
 after_failure: ./.jrl-ci/run after_failure
 before_install:
+- if [ $CC = gcc -a $CMAKE_BUILD_TYPE = RelWithDebInfo ]; then export DO_DOC_UPDATE=true; else export DO_DOC_UPDATE=false; fi
 - export CMAKE_ADDITIONAL_OPTIONS="${CMAKE_ADDITIONAL_OPTIONS} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
 - ./.jrl-ci/run  before_install
