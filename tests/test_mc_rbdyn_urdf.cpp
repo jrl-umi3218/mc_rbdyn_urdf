@@ -137,13 +137,13 @@ bool operator==(const Geometry& g1, const Geometry& g2)
   switch(g1.type)
   {
     case Geometry::MESH:
-      return g1.data.m == g2.data.m;
+      return g1.data().m == g2.data().m;
     case Geometry::BOX:
-      return g1.data.b == g2.data.b;
+      return g1.data().b == g2.data().b;
     case Geometry::SPHERE:
-      return g1.data.s == g2.data.s;
+      return g1.data().s == g2.data().s;
     case Geometry::CYLINDER:
-      return g1.data.c == g2.data.c;
+      return g1.data().c == g2.data().c;
     default:
       return true;
   };
@@ -212,12 +212,10 @@ mc_rbdyn_urdf::URDFParserResult createRobot()
 
   mc_rbdyn_urdf::Visual v1, v2;
   v1.origin = sva::PTransformd(T0.rotation(), T0.translation());
-  v1.geometry.type = mc_rbdyn_urdf::Geometry::Type::MESH;
-  new (&v1.geometry.data.m) mc_rbdyn_urdf::Geometry::Mesh{"test_mesh1.dae", 1.0};
+  v1.geometry.mesh(mc_rbdyn_urdf::Geometry::Mesh{"test_mesh1.dae", 1.0});
 
   v2.origin = sva::PTransformd(T1.rotation(), T1.translation());
-  v2.geometry.type = mc_rbdyn_urdf::Geometry::Type::MESH;
-  new (&v2.geometry.data.m) mc_rbdyn_urdf::Geometry::Mesh{"/some/longlonglong/longlonglong/longlonglong/path/test_mesh2.dae", 1.0};
+  v2.geometry.mesh(mc_rbdyn_urdf::Geometry::Mesh{"/some/longlonglong/longlonglong/longlonglong/path/test_mesh2.dae", 1.0});
 
   res.visual = {{"b0", {v1, v2}}};
 

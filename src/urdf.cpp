@@ -47,29 +47,28 @@ Geometry::~Geometry()
   if(type == MESH)
   {
     using MeshT = Geometry::Mesh;
-    data.m.~MeshT();
+    data_.m.~MeshT();
   }
 }
 
 Geometry::Geometry(const Geometry & rhs)
 {
-  type = rhs.type;
-  switch(type)
+  switch(rhs.type)
   {
     case MESH:
-      new (&data.m) Geometry::Mesh(rhs.data.m);
+      mesh(rhs.data_.m);
       break;
     case BOX:
-      data.b = rhs.data.b;
+      box(rhs.data_.b);
       break;
     case CYLINDER:
-      data.c = rhs.data.c;
+      cylinder(rhs.data_.c);
       break;
     case SPHERE:
-      data.s = rhs.data.s;
+      sphere(rhs.data_.s);
       break;
     case UNKNOWN:
-      data.u = rhs.data.u;
+      unknown();
       break;
   }
 }
@@ -77,26 +76,79 @@ Geometry::Geometry(const Geometry & rhs)
 Geometry & Geometry::operator=(const Geometry & rhs)
 {
   if(this == &rhs) { return *this; }
-  type = rhs.type;
-  switch(type)
+  switch(rhs.type)
   {
     case MESH:
-      new (&data.m) Geometry::Mesh(rhs.data.m);
+      mesh(rhs.data_.m);
       break;
     case BOX:
-      data.b = rhs.data.b;
+      box(rhs.data_.b);
       break;
     case CYLINDER:
-      data.c = rhs.data.c;
+      cylinder(rhs.data_.c);
       break;
     case SPHERE:
-      data.s = rhs.data.s;
+      sphere(rhs.data_.s);
       break;
     case UNKNOWN:
-      data.u = rhs.data.u;
+      unknown();
       break;
   }
   return *this;
+}
+
+void Geometry::box(const Box & b)
+{
+  if(type == MESH)
+  {
+    using MeshT = Geometry::Mesh;
+    data_.m.~MeshT();
+  }
+  data_.b = b;
+  type = BOX;
+}
+
+void Geometry::cylinder(const Cylinder & c)
+{
+  if(type == MESH)
+  {
+    using MeshT = Geometry::Mesh;
+    data_.m.~MeshT();
+  }
+  data_.c = c;
+  type = CYLINDER;
+}
+
+void Geometry::sphere(const Sphere & s)
+{
+  if(type == MESH)
+  {
+    using MeshT = Geometry::Mesh;
+    data_.m.~MeshT();
+  }
+  data_.s = s;
+  type = SPHERE;
+}
+
+void Geometry::mesh(const Mesh & m)
+{
+  if(type == MESH)
+  {
+    using MeshT = Geometry::Mesh;
+    data_.m.~MeshT();
+  }
+  new (&data_.m) Mesh(m);
+  type = MESH;
+}
+
+void Geometry::unknown()
+{
+  if(type == MESH)
+  {
+    using MeshT = Geometry::Mesh;
+    data_.m.~MeshT();
+  }
+  type = UNKNOWN;
 }
 
 std::vector<double> attrToList(const tinyxml2::XMLElement & dom,
@@ -325,11 +377,10 @@ std::string parseMultiBodyGraphFromURDF(URDFParserResult & res,
         if(meshDom)
         {
           v.origin = originFromTag(child);
-          v.geometry.type = Geometry::Type::MESH;
           // Optional scale
           double scale = 1.;
           meshDom->QueryDoubleAttribute( "scale", &scale );
-          new (&v.geometry.data.m) Geometry::Mesh{std::string(meshDom->Attribute("filename")), scale};
+          v.geometry.mesh(Geometry::Mesh{std::string(meshDom->Attribute("filename")), scale});
         }
         else
         {

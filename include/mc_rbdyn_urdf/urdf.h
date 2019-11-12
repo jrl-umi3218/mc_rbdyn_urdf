@@ -69,7 +69,7 @@ public:
     MESH,
     UNKNOWN
   };
-  Type type;
+  Type type = UNKNOWN;
   union GeometryT
   {
     GeometryT() : u() {}
@@ -80,7 +80,22 @@ public:
     Unknown u;
     ~GeometryT() {}
   };
-  GeometryT data;
+  const GeometryT & data() const { return data_; }
+
+  /** Set geometry to the provided box */
+  void box(const Box & b);
+
+  /** Set geometry to the provided cylinder */
+  void cylinder(const Cylinder & c);
+
+  /** Set geometry to the provided sphere */
+  void sphere(const Sphere & s);
+
+  /** Set geometry to the provided mesh */
+  void mesh(const Mesh & m);
+
+  /** Set geometry to unknown */
+  void unknown();
 
   Geometry() : type(UNKNOWN) {}
 
@@ -88,6 +103,8 @@ public:
 
   Geometry(const Geometry & rhs);
   Geometry& operator=(const Geometry & rhs);
+private:
+  GeometryT data_;
 };
 
 struct MCRBDYNURDF_API Visual
