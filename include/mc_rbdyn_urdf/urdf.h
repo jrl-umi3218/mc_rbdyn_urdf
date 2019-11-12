@@ -13,8 +13,6 @@
 
 #include <SpaceVecAlg/SpaceVecAlg>
 
-#include <boost/variant.hpp>
-
 #include <Eigen/Core>
 #include <string>
 #include <tinyxml2.h>
