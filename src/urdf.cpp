@@ -17,9 +17,7 @@
 namespace mc_rbdyn_urdf
 {
 
-double attrToDouble(const tinyxml2::XMLElement & dom,
-                    const std::string & attr,
-                    double def = 0.0)
+double attrToDouble(const tinyxml2::XMLElement & dom, const std::string & attr, double def = 0.0)
 {
   const char * attrTxt = dom.Attribute(attr.c_str());
   if(attrTxt)
