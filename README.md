@@ -8,6 +8,8 @@ mc_rbdyn_urdf
 
 This library allows to parse an URDF file and create RBDyn structure from it. It is entirely ROS-free.
 
+Note: this package is deprecated, URDF parsing is now available directly in [RBDyn](https://github.com/jrl-umi3218/RBDyn)
+
 Installing
 ------
 
