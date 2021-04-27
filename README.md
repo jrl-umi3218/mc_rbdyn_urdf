@@ -2,7 +2,7 @@ mc_rbdyn_urdf
 ==
 
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-green.svg)](https://opensource.org/licenses/BSD-2-Clause)
-[ ![Download](https://api.bintray.com/packages/gergondet/multi-contact/mc_rbdyn_urdf%3Agergondet/images/download.svg) ](https://bintray.com/gergondet/multi-contact/mc_rbdyn_urdf%3Agergondet/_latestVersion)
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith)](https://cloudsmith.com)
 [![CI](https://github.com/jrl-umi3218/mc_rbdyn_urdf/workflows/CI%20of%20mc_rbdyn_urdf/badge.svg?branch=master)](https://github.com/jrl-umi3218/mc_rbdyn_urdf/actions?query=workflow%3A%22CI+of+mc_rbdyn_urdf%22)
 [![Documentation](https://img.shields.io/badge/doxygen-online-brightgreen?logo=read-the-docs&style=flat)](http://jrl-umi3218.github.io/mc_rbdyn_urdf/doxygen/HEAD/index.html)
 
@@ -15,19 +15,26 @@ Installing
 
 ## Ubuntu LTS (16.04, 18.04, 20.04)
 
+You must first setup our package mirror:
+
+```
+curl -1sLf \
+  'https://dl.cloudsmith.io/public/mc-rtc/stable/setup.deb.sh' \
+  | sudo -E bash
+```
+
+You can also choose the head mirror which will have the latest version of this package:
+
+```
+curl -1sLf \
+  'https://dl.cloudsmith.io/public/mc-rtc/stable/setup.deb.sh' \
+  | sudo -E bash
+```
+
+You can then install the package:
+
 ```bash
-# Make sure you have required tools
-sudo apt install apt-transport-https lsb-release
-# Add our key
-sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key 892EA6EE273707C6495A6FB6220D644C64666806
-# Add our repository (stable versions)
-sudo sh -c 'echo "deb https://dl.bintray.com/gergondet/multi-contact-release $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/multi-contact.list'
-# Use this to setup the HEAD version
-# sudo sh -c 'echo "deb https://dl.bintray.com/gergondet/multi-contact-release $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/multi-contact.list'
-# Update packages list
-sudo apt update
-# Install packages
-sudo apt install librbdyn-dev python-rbdyn python3-rbdyn
+sudo apt install libmc-rbdyn-urdf-dev python-mc-rbdyn-urdf python3-mc-rbdyn-urdf
 ```
 
 ## Manually build from source
