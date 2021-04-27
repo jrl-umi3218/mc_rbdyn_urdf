@@ -1,12 +1,4 @@
 var searchData=
 [
-  ['bodies_5f',['bodies_',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01064.html#abbea0b9458d4a5bfc17d1821882e78f2',1,'rbd::MultiBody']]],
-  ['body',['body',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01084.html#aea931fe8a425c0795911395cd09071b6',1,'rbd::MultiBodyGraph::Node']]],
-  ['bodyaccb',['bodyAccB',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01068.html#a25fc059a35f32434f2743f91f78c06bb',1,'rbd::MultiBodyConfig']]],
-  ['bodynametoind_5f',['bodyNameToInd_',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01064.html#afa2c9103dc0cf11ac2812ffdf63ec738',1,'rbd::MultiBody']]],
-  ['bodynametonode_5f',['bodyNameToNode_',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01076.html#ad799fa0fa418547b6bb64ae2a5f3eb13',1,'rbd::MultiBodyGraph']]],
-  ['bodyposw',['bodyPosW',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01068.html#a68f5498dbe584cc07ca833501688a6e3',1,'rbd::MultiBodyConfig']]],
-  ['bodyvelb',['bodyVelB',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01068.html#a7f8b9fcb9804bf87505c65a0d6e17785',1,'rbd::MultiBodyConfig']]],
-  ['bodyvelw',['bodyVelW',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01068.html#a278db7240fb454ea06bd3dce78a18da9',1,'rbd::MultiBodyConfig']]],
-  ['box',['BOX',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a00976.html#a91ba6c5a035011ff6a22120b1c26c71fa0ef17f0fc0df1e20fb78c45b4a74807e',1,'rbd::parsers::Geometry']]]
+  ['data',['data',['../a00567.html#aa3590b371b4a3aeb494350c99bd8d08b',1,'mc_rbdyn_urdf::Geometry']]]
 ];

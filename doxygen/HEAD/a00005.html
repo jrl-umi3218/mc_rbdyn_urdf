@@ -78,11 +78,11 @@ $(document).ready(function(){initNavTree('a00005.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="a00002.html">mc_rbdyn_urdf/api.h</a>&gt;</code><br />
-<code>#include &lt;<a class="elRef" doxygen="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//RBDyn.doxytag:https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//" href="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a00377.html">RBDyn/Joint.h</a>&gt;</code><br />
-<code>#include &lt;<a class="elRef" doxygen="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//RBDyn.doxytag:https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//" href="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a00383.html">RBDyn/MultiBody.h</a>&gt;</code><br />
-<code>#include &lt;<a class="elRef" doxygen="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//RBDyn.doxytag:https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//" href="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a00386.html">RBDyn/MultiBodyConfig.h</a>&gt;</code><br />
-<code>#include &lt;<a class="elRef" doxygen="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//RBDyn.doxytag:https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//" href="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a00389.html">RBDyn/MultiBodyGraph.h</a>&gt;</code><br />
-<code>#include &lt;<a class="elRef" doxygen="https://jrl-umi3218.github.io/SpaceVecAlg/doxygen/HEAD//SpaceVecAlg.doxytag:https://jrl-umi3218.github.io/SpaceVecAlg/doxygen/HEAD//" href="https://jrl-umi3218.github.io/SpaceVecAlg/doxygen/HEAD//a00059.html">SpaceVecAlg/SpaceVecAlg</a>&gt;</code><br />
+<code>#include &lt;RBDyn/Joint.h&gt;</code><br />
+<code>#include &lt;RBDyn/MultiBody.h&gt;</code><br />
+<code>#include &lt;RBDyn/MultiBodyConfig.h&gt;</code><br />
+<code>#include &lt;RBDyn/MultiBodyGraph.h&gt;</code><br />
+<code>#include &lt;SpaceVecAlg/SpaceVecAlg&gt;</code><br />
 <code>#include &lt;boost/variant.hpp&gt;</code><br />
 <code>#include &lt;Eigen/Core&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
@@ -90,21 +90,21 @@ $(document).ready(function(){initNavTree('a00005.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00671.html">mc_rbdyn_urdf::Limits</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00563.html">mc_rbdyn_urdf::Limits</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00675.html">mc_rbdyn_urdf::Geometry</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00567.html">mc_rbdyn_urdf::Geometry</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00679.html">mc_rbdyn_urdf::Geometry::Mesh</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00571.html">mc_rbdyn_urdf::Geometry::Mesh</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00683.html">mc_rbdyn_urdf::Geometry::Box</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00575.html">mc_rbdyn_urdf::Geometry::Box</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00687.html">mc_rbdyn_urdf::Geometry::Cylinder</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00579.html">mc_rbdyn_urdf::Geometry::Cylinder</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00691.html">mc_rbdyn_urdf::Geometry::Sphere</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00583.html">mc_rbdyn_urdf::Geometry::Sphere</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00695.html">mc_rbdyn_urdf::Visual</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00587.html">mc_rbdyn_urdf::Visual</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00699.html">mc_rbdyn_urdf::URDFParserResult</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00591.html">mc_rbdyn_urdf::URDFParserResult</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -120,9 +120,9 @@ Functions</h2></td></tr>
 <tr class="separator:aa9f1ebd785896b5c138f6cec57d3efab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22562e857fafce2c632f3853d905048e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00002.html#a18a3ed32c5f243aa1a8c07fdaad78476">MCRBDYNURDF_API</a> Eigen::Matrix3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00015.html#a22562e857fafce2c632f3853d905048e">mc_rbdyn_urdf::RPY</a> (const double &amp;r, const double &amp;p, const double &amp;y)</td></tr>
 <tr class="separator:a22562e857fafce2c632f3853d905048e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a04f383260ca8d3b0d0cf7c906cb2f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00002.html#a18a3ed32c5f243aa1a8c07fdaad78476">MCRBDYNURDF_API</a> <a class="elRef" doxygen="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//RBDyn.doxytag:https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//" href="https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01056.html#afff99e26b5eeb3d899af433df385f4fd">rbd::Joint::Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00015.html#a6a04f383260ca8d3b0d0cf7c906cb2f7">mc_rbdyn_urdf::rbdynFromUrdfJoint</a> (const std::string &amp;type)</td></tr>
+<tr class="memitem:a6a04f383260ca8d3b0d0cf7c906cb2f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00002.html#a18a3ed32c5f243aa1a8c07fdaad78476">MCRBDYNURDF_API</a> rbd::Joint::Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00015.html#a6a04f383260ca8d3b0d0cf7c906cb2f7">mc_rbdyn_urdf::rbdynFromUrdfJoint</a> (const std::string &amp;type)</td></tr>
 <tr class="separator:a6a04f383260ca8d3b0d0cf7c906cb2f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a629eb373d04fcef152f200779ce78006"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00002.html#a18a3ed32c5f243aa1a8c07fdaad78476">MCRBDYNURDF_API</a> <a class="elRef" doxygen="https://jrl-umi3218.github.io/SpaceVecAlg/doxygen/HEAD//SpaceVecAlg.doxytag:https://jrl-umi3218.github.io/SpaceVecAlg/doxygen/HEAD//" href="https://jrl-umi3218.github.io/SpaceVecAlg/doxygen/HEAD//a00067.html#a259dde998fab6de957995eedfdb4d179">sva::PTransformd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00015.html#a629eb373d04fcef152f200779ce78006">mc_rbdyn_urdf::originFromTag</a> (const tinyxml2::XMLElement &amp;root, const std::string &amp;tagName)</td></tr>
+<tr class="memitem:a629eb373d04fcef152f200779ce78006"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00002.html#a18a3ed32c5f243aa1a8c07fdaad78476">MCRBDYNURDF_API</a> sva::PTransformd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00015.html#a629eb373d04fcef152f200779ce78006">mc_rbdyn_urdf::originFromTag</a> (const tinyxml2::XMLElement &amp;root, const std::string &amp;tagName)</td></tr>
 <tr class="separator:a629eb373d04fcef152f200779ce78006"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7c772d3c9b849d2224ab446a3fe1fd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="a00002.html#a18a3ed32c5f243aa1a8c07fdaad78476">MCRBDYNURDF_API</a> URDFParserResult&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00015.html#af7c772d3c9b849d2224ab446a3fe1fd3">mc_rbdyn_urdf::rbdyn_from_urdf</a> (const std::string &amp;content, bool fixed=true, const std::vector&lt; std::string &gt; &amp;filteredLinksIn={}, bool transformInertia=true, const std::string &amp;baseLinkIn=&quot;&quot;, bool withVirtualLinks=true, const std::string sphericalSuffix=&quot;_spherical&quot;)</td></tr>
 <tr class="separator:af7c772d3c9b849d2224ab446a3fe1fd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,7 +136,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_f7eabf84fbebfa7cf608a1819efc6a4c.html">mc_rbdyn_urdf</a></li><li class="navelem"><a class="el" href="a00005.html">urdf.h</a></li>
-    <li class="footer">Generated on Tue Apr 28 2020 11:25:09 for mc_rbdyn_urdf by
+    <li class="footer">Generated on Tue Apr 27 2021 11:02:40 for mc_rbdyn_urdf by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

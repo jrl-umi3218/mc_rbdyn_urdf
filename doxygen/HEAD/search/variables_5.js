@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['filename',['filename',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a00980.html#a2867edbc42caacd1c409287ecc0c2315',1,'rbd::parsers::Geometry::Mesh::filename()'],['../a00679.html#af849aa431bdc1d64fde5762d958c091d',1,'mc_rbdyn_urdf::Geometry::Mesh::filename()']]],
-  ['fixed',['Fixed',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01056.html#afff99e26b5eeb3d899af433df385f4fda81b78f2a5f37470430e975ed9436ce1d',1,'rbd::Joint']]],
-  ['force',['force',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01068.html#ad66203eb0d1267c14869d6fc409164db',1,'rbd::MultiBodyConfig']]],
-  ['free',['Free',['https://jrl-umi3218.github.io/RBDyn/doxygen/HEAD//a01056.html#afff99e26b5eeb3d899af433df385f4fdab6d9c54c25c59aa44ef674c5b58be044',1,'rbd::Joint']]]
+  ['mb',['mb',['../a00591.html#a403ade19b42e77dce10522387aaa2278',1,'mc_rbdyn_urdf::URDFParserResult']]],
+  ['mbc',['mbc',['../a00591.html#a4659cfa1b016c83cfa85da50a7b4370a',1,'mc_rbdyn_urdf::URDFParserResult']]],
+  ['mbg',['mbg',['../a00591.html#ac098a346642dae3d045b3611be182ecb',1,'mc_rbdyn_urdf::URDFParserResult']]]
 ];
