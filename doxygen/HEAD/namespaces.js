@@ -1,4 +1,4 @@
 var namespaces =
 [
-    [ "mc_rbdyn_urdf", "a00015.html", null ]
+    [ "mc_rbdyn_urdf", "namespacemc__rbdyn__urdf.html", null ]
 ];

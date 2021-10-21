@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['cylinder',['Cylinder',['../a00579.html',1,'mc_rbdyn_urdf::Geometry']]]
+  ['cylinder',['Cylinder',['../structmc__rbdyn__urdf_1_1Geometry_1_1Cylinder.html',1,'mc_rbdyn_urdf::Geometry']]]
 ];

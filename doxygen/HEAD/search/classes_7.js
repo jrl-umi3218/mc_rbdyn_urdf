@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['visual',['Visual',['../a00587.html',1,'mc_rbdyn_urdf']]]
+  ['visual',['Visual',['../structmc__rbdyn__urdf_1_1Visual.html',1,'mc_rbdyn_urdf']]]
 ];

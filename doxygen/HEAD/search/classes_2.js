@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['geometry',['Geometry',['../a00567.html',1,'mc_rbdyn_urdf']]]
+  ['geometry',['Geometry',['../structmc__rbdyn__urdf_1_1Geometry.html',1,'mc_rbdyn_urdf']]]
 ];

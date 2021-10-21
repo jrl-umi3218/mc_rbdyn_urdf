@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['urdfparserresult',['URDFParserResult',['../a00591.html',1,'mc_rbdyn_urdf']]]
+  ['urdfparserresult',['URDFParserResult',['../structmc__rbdyn__urdf_1_1URDFParserResult.html',1,'mc_rbdyn_urdf']]]
 ];
