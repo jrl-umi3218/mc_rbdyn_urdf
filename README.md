@@ -52,7 +52,7 @@ sudo apt install libmc-rbdyn-urdf-dev python-mc-rbdyn-urdf python3-mc-rbdyn-urdf
 ### Building
 
 ```sh
-git clone --recursive https://github.com/jrl-umi3218/mc_rbydn_urdf
+git clone --recursive https://github.com/jrl-umi3218/mc_rbdyn_urdf
 cd mc_rbydn_urdf
 mkdir _build
 cd _build
