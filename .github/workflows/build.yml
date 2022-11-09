@@ -11,14 +11,13 @@ on:
 jobs:
 
   clang-format:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v1
-    - name: Install clang-format-6.0
+    - uses: actions/checkout@v2
+    - name: Install clang-format-10
       run: |
         sudo apt-get -qq update
-        sudo apt-get -qq remove clang-6.0 libclang1-6.0 libclang-common-6.0-dev libllvm6.0
-        sudo apt-get -qq install clang-format-6.0 clang-format
+        sudo apt-get -qq install clang-format-10
     - name: Run clang-format-check
       run: |
         ./.clang-format-check.sh
@@ -55,12 +54,12 @@ jobs:
         compiler: ${{ matrix.compiler }}
         build-type: ${{ matrix.build-type }}
         ubuntu: |
-          apt: cython cython3 python-nose python3-nose python-numpy python3-numpy python-coverage python3-coverage python-setuptools python3-setuptools libeigen3-dev doxygen doxygen-latex libboost-all-dev libtinyxml2-dev libyaml-cpp-dev
+          apt: cython cython3 python-pytest python3-pytest python-numpy python3-numpy python-coverage python3-coverage python-setuptools python3-setuptools libeigen3-dev doxygen doxygen-latex libboost-all-dev libtinyxml2-dev libyaml-cpp-dev
         macos: |
           brew: eigen boost tinyxml2 yaml-cpp
-          pip: Cython coverage nose numpy
+          pip: Cython coverage pytest numpy
         windows: |
-          pip: Cython coverage nose numpy
+          pip: Cython coverage pytest numpy
           github:
             - path: eigenteam/eigen-git-mirror
               ref: 3.3.7
